@@ -1,0 +1,65 @@
+:root{
+    --primary-color: #f36643;
+    --bg-primary: #fefefe;
+    --bg-secondary: #fafafa;
+    --max-width: 1200px;
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #434343;
+    background: var(--bg-secondary);
+    transition: all .3s ease-in-out;
+}
+
+/* ========== utility classes =========== */
+.container{
+    max-width: var(--max-width);
+}
+
+.flex{
+    display: flex;
+}
+.spc-btw{
+    justify-content: space-between;
+}
+.center-x{
+    justify-content: center;
+}
+.center-y{
+    align-items: center;
+}
+.my-auto{
+    margin-left: auto;
+    margin-right: auto;
+
+}
+.py-05r{padding-left: .5rem; padding-right: .5rem;}
+.py-1r{padding-left: 1rem; padding-right: 1rem;}
+.py-2r{padding-left: 2rem; padding-right: 2rem;}
+.px-05r{padding-top: .5rem; padding-bottom: .5rem;}
+.px-1r{padding-top: 1rem; padding-bottom: 1rem;}
+.px-2r{padding-top: 2rem; padding-bottom: 2rem;}
+
+.my-05r{margin-left: .5rem; margin-right: .5rem;}
+.my-1r{margin-left: 1rem; margin-right: 1rem;}
+.my-2r{margin-left: 2rem; margin-right: 2rem;}
+.mx-05r{margin-top: .5rem; margin-bottom: .5rem;}
+.mx-1r{margin-top: 1rem; margin-bottom: 1rem;}
+.mx-2r{margin-top: 2rem; margin-bottom: 2rem;}
+
+.shadow{
+    box-shadow: 2px 2px 5px #ddd, -1px -1px 10px #eaeaea;
+}
+
+.bg-primary{
+    background: var(--bg-primary);
+}
+.bg-secondary{
+    background: var(--bg-secondary);
+
+}
