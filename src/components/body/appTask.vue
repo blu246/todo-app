@@ -1,5 +1,5 @@
 <template>
-    <div id="task" :class="{'dia-bg': diaBg}">
+    <div id="task" :class="taskIndLine">
         <div 
             :style="{fontSize: textSize}"
             class="flex spc-btw"
@@ -19,9 +19,8 @@
                     @paste="checkInput"
                     @cut="checkInput"
                 >
-                {{task.taskText}} 
+                {{task.taskText}}
                 </p>
-                {{task.hasNextSib}}
             </div>
             
             <app-task-controls 
@@ -42,7 +41,11 @@
                 :task="subtask"
                 :depth="currentDepth"
                 :generateTask="generateTask"
-                :hasNextSib="hasNextSib"
+                :has="checkNextSib"
+                :checkNextSib="checkNextSib"
+                @deleteTask="task.subtasks.splice(index, 1)"
+                @checkNextSib="checkNextSib(index, task.subtasks)"
+                
             ></app-task>
         </div>
     </div>
@@ -51,7 +54,7 @@
 <script>
 import appTaskControls from './appTaskControls.vue'
 export default {
-    props: ["task", "depth", "generateTask", "testNextSib", "hasNextSib"], //weee
+    props: ["task", "depth", "generateTask", "checkNextSib"],
     components:{
         appTask: ()=>import('./appTask.vue'),
         appTaskControls
@@ -60,8 +63,6 @@ export default {
         currentDepth: this.depth + 1,
         highlightTask: false,
         showPlaceholder: false,
-        diaBg: false
-
     }},
     // ====== computed ========
     computed:{
@@ -90,12 +91,16 @@ export default {
             if(this.task.expanded){ value += " rotate-icon"}
             const status = this.task.status;
             if(status != "active"){ value += status == "done" ? " done" : " failed"}
-            console.log(value);
             return value;
         },
-        
+        taskIndLine(){
+            //has to be expanded otherwise it doesn't serve much purpose
+            return (this.task.expanded && this.task.hasNextSib) ? 'task-ind-line' : "";
+        }
 
     },
+    // ====== WATCHED ========
+    
 
     // ====== METHODS ========
     methods:{
@@ -103,8 +108,13 @@ export default {
             if(this.hasChildren && !this.task.editable){
                 this.task.expanded = !this.task.expanded
             }
+            //could use a watcher but I think this is more concise
+            this.testNextSib();
         },
-        
+        testNextSib(){
+            //is there a better way to do this?
+            this.$emit("checkNextSib");
+        },
         checkInput(e){
             setTimeout(()=>{
                 const regexp = /^\s+$/g, 
@@ -124,7 +134,7 @@ export default {
                 }
                 this.showPlaceholder = isEmpty ? true : false;
                 
-            }, 0); //placeholder doesn't work properly; isEmpty is set falsly without it.
+            }, 0); //placeholder doesn't work properly; isEmpty is set falsly without the delay.
         },
         newTask(){
             const task = this.generateTask("");
@@ -136,7 +146,8 @@ export default {
     },
 
 //======= MOUNTED =========
-    mounted(){ //focuses on new task created
+    mounted(){ 
+        //focuses on new task created
         const el = this.$refs.taskP,
               elText = this.$refs.taskP.childNodes[0],
               range = document.createRange(),
@@ -149,7 +160,9 @@ export default {
 
         el.focus()
 
-        this.checkInput(2);
+        // See whether to render the line below the taskIndicator or not
+        this.testNextSib();
+
     },
 
 }
@@ -171,8 +184,8 @@ export default {
 
     }
     p.task-highlight{
-        /* color: var(--primary-color); */
-        transform: scale(110%) translateX(4%);
+        background: rgb(237, 251, 255);
+        /* transform: scale(110%) translateX(4%); */
     }
     .expandable:hover{
         cursor: pointer;
@@ -216,20 +229,19 @@ export default {
     .strike{
         text-decoration: line-through;
     }
-    .dia-bg{
+    .task-ind-line{
         /* background: rgb(228, 219, 180); */
         position: relative;
     }
-    .dia-bg:after{
+    .task-ind-line:after{
         content: "";
         display: block;
         width: 0.15rem;
         height: calc(100% - 1rem);
         position: absolute;
         background: #eaeaea;
-        /* transform: translate(0.1rem, -100%); */
-        top: 1.5rem;
-        left: 1.12rem;
+        top: 1.6em;
+        left: 1.12em;
     }
 
 

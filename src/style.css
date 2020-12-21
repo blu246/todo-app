@@ -63,3 +63,6 @@ body{
     background: var(--bg-secondary);
 
 }
+.bg-primary-color{
+    background: var(--primary-color);
+}

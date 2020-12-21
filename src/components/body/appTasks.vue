@@ -6,8 +6,10 @@
                 :task="task" 
                 :depth=0
                 :generateTask="generateTask"
-                :testNextSib="testNextSib"
+                :checkNextSib="checkNextSib"
+                :parentList="tasksList"
                 @deleteTask="tasksList.splice(index, 1)"
+                @checkNextSib="checkNextSib(index, tasksList)"
             ></app-task>
     </div>
     
@@ -25,19 +27,21 @@ export default {
             taskText: "some text here",
             expanded: false,
             status: "active",
+            hasNextSib: false,
             subtasks: [
                 {
                     taskText: "this is a subtask", 
                     expanded: false,
                     status: "active",
+                    hasNextSib: false,
                 
                     subtasks: [
-                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",},
-                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",},
+                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false,},
+                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false,},
 
                     ]
                 },
-                {taskText: "this is another subtask", expanded: false, subtasks: [],status: "active",}
+                {taskText: "this is another subtask", expanded: false, subtasks: [],status: "active",hasNextSib: false,}
             ]
         },
         tasksList:[
@@ -59,20 +63,23 @@ export default {
                 editable: true,
                 status: "active", // active/done/failed
                 subtasks: [],
-                hasNextSibling: false
+                hasNextSib: false,
             }
+
         },
         newTask(){
             this.tasksList.push(this.generateTask(" "));
         },
-        testNextSib(arr){
-            for(let i = 0; i<arr.length; i++){
-                if(arr[i+1]){
-                    arr[i].hasNextSibling = true;
-                }
+        //I know, having some of the 1st level task here presents some issues, but making it all part of appTask is a bit more complicated. Will refactor later 
+        //this will run on on each expanded, will it affect performance much? Dunno..
+        checkNextSib(index, list){
+            if(list[index+1]){
+                list[index].hasNextSib = true;
+            } else{
+                list[index].hasNextSib = false;
+
             }
-        }
-        
+        }        
         
     },
     created(){
