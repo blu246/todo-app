@@ -28,20 +28,23 @@ export default {
             expanded: false,
             status: "active",
             hasNextSib: false,
+            editable: false,
             subtasks: [
                 {
                     taskText: "this is a subtask", 
                     expanded: false,
                     status: "active",
                     hasNextSib: false,
+                    editable: false,
+
                 
                     subtasks: [
-                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false,},
-                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false,},
+                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false,editable: false,},
+                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false, editable: false,},
 
                     ]
                 },
-                {taskText: "this is another subtask", expanded: false, subtasks: [],status: "active",hasNextSib: false,}
+                {taskText: "this is another subtask", expanded: false, subtasks: [],status: "active",hasNextSib: false, editable: false,}
             ]
         },
         tasksList:[
@@ -68,7 +71,7 @@ export default {
 
         },
         newTask(){
-            this.tasksList.push(this.generateTask(" "));
+            this.tasksList.push(this.generateTask(""));
         },
         //I know, having some of the 1st level task here presents some issues, but making it all part of appTask is a bit more complicated. Will refactor later 
         //this will run on on each expanded, will it affect performance much? Dunno..

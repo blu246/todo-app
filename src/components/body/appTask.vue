@@ -26,9 +26,9 @@
             <app-task-controls 
                 @mouseenter.native="highlightTask=true" 
                 @mouseleave.native="highlightTask=false"
-                @done="task.status = 'done'"
-                @failed="task.status = 'failed'"
-                @newTask="newTask"
+                @controlsevent="controlsEvent"
+                @menuevent="menuEvent"
+
             ></app-task-controls>
 
         </div>
@@ -45,8 +45,8 @@
                 :checkNextSib="checkNextSib"
                 @deleteTask="task.subtasks.splice(index, 1)"
                 @checkNextSib="checkNextSib(index, task.subtasks)"
-                
             ></app-task>
+            <!-- will clean this ^ mess soon enough -->
         </div>
     </div>
 </template>
@@ -123,7 +123,7 @@ export default {
                 
                 if(e.key === "Enter"){
                     this.task.editable = false;
-                    const res = text.replace(/\n/, "")
+                    const res = text.replace(/\n/, ""); 
                     this.$refs.taskP.innerText = res; //remove the inserted \n
                     this.task.taskText = res;
 
@@ -134,31 +134,79 @@ export default {
                 }
                 this.showPlaceholder = isEmpty ? true : false;
                 
-            }, 0); //placeholder doesn't work properly; isEmpty is set falsly without the delay.
+                
+            }, 2); //placeholder doesn't work properly; isEmpty is set falsly without the delay.
         },
         newTask(){
             const task = this.generateTask("");
             this.task.subtasks.push(task);
             this.task.expanded = true;
-        }
+        },
+
+        controlsEvent(type){
+            switch(type){
+                case "done":
+                    this.task.status = "done";
+                    break;
+                case "failed":
+                    this.task.status = "failed";
+                    break;
+                case "newtask":
+                    this.newTask();
+                    break;
+            }   
+        },
+
+        menuEvent(type){
+            switch(type){
+                case "edit":
+                    this.task.editable = true;
+                    this.focusTask();   
+                    break;
+                
+                case "rearm":
+                    this.task.status = "active"
+                    break;
+
+                case "delete":
+                    this.$emit("deleteTask");
+
+            }
+        },
+
+        focusTask(){
+            setTimeout(
+                ()=>{
+                    if(this.task.editable == false){
+                        return; 
+                    }
+                    const el = this.$refs.taskP,
+                        elText = this.$refs.taskP.childNodes[0],
+                        range = document.createRange(),
+                        sel = window.getSelection();
+
+                    console.log(this.$refs.taskP);
+
+                    range.setStart(elText, elText.length-1);
+                    range.collapse(true);
+                    sel.removeAllRanges()
+                    sel.addRange(range)
+                    el.focus()
+                },
+                1
+            )
+        },
         
             
     },
 
 //======= MOUNTED =========
     mounted(){ 
+        //check input
+        this.checkInput("");
+
         //focuses on new task created
-        const el = this.$refs.taskP,
-              elText = this.$refs.taskP.childNodes[0],
-              range = document.createRange(),
-              sel = window.getSelection();
-
-        range.setStart(elText, elText.length-1);
-        range.collapse(true);
-        sel.removeAllRanges()
-        sel.addRange(range)
-
-        el.focus()
+        this.focusTask();
 
         // See whether to render the line below the taskIndicator or not
         this.testNextSib();
