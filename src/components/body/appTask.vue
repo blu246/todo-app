@@ -43,6 +43,7 @@
                 :generateTask="generateTask"
                 :has="checkNextSib"
                 :checkNextSib="checkNextSib"
+                :parentList="task.subtasks"
                 @deleteTask="task.subtasks.splice(index, 1)"
                 @checkNextSib="checkNextSib(index, task.subtasks)"
             ></app-task>
@@ -54,7 +55,7 @@
 <script>
 import appTaskControls from './appTaskControls.vue'
 export default {
-    props: ["task", "depth", "generateTask", "checkNextSib"],
+    props: ["task", "depth", "generateTask", "checkNextSib", "parentList"],
     components:{
         appTask: ()=>import('./appTask.vue'),
         appTaskControls
@@ -100,7 +101,11 @@ export default {
 
     },
     // ====== WATCHED ========
-    
+    watch:{
+        parentList(){
+            this.testNextSib();
+        }
+    },
 
     // ====== METHODS ========
     methods:{
@@ -108,12 +113,15 @@ export default {
             if(this.hasChildren && !this.task.editable){
                 this.task.expanded = !this.task.expanded
             }
-            //could use a watcher but I think this is more concise
-            this.testNextSib();
         },
+
         testNextSib(){
-            //is there a better way to do this?
-            this.$emit("checkNextSib");
+            const list  = this.parentList;
+            for(let task of list){
+                task.hasNextSib = true;
+            }
+            list[list.length-1].hasNextSib = false;
+            //Yes! I know a child shouldn't mutate its parent's data, but in this recursive application, doing it the "proper" way would result in an unecessary duplication of lines. I already have enough of that, and I hate it.
         },
         checkInput(e){
             setTimeout(()=>{
