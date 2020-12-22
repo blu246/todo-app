@@ -6,10 +6,8 @@
                 :task="task" 
                 :depth=0
                 :generateTask="generateTask"
-                :checkNextSib="checkNextSib"
                 :parentList="tasksList"
                 @deleteTask="tasksList.splice(index, 1)"
-                @checkNextSib="checkNextSib(index, tasksList)"
             ></app-task>
     </div>
     
@@ -75,14 +73,6 @@ export default {
         },
         //I know, having some of the 1st level task here presents some issues, but making it all part of appTask is a bit more complicated. Will refactor later 
         //this will run on on each expanded, will it affect performance much? Dunno..
-        checkNextSib(index, list){
-            if(list[index+1]){
-                list[index].hasNextSib = true;
-            } else{
-                list[index].hasNextSib = false;
-
-            }
-        }        
         
     },
     created(){
