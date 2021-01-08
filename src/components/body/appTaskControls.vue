@@ -63,6 +63,7 @@ export default {
     }
     .menu-container{
         position: relative;
+        flex-shrink: 0;
     }
     .menu{
         position: absolute;

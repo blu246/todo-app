@@ -3,6 +3,7 @@
         <div 
             :style="{fontSize: textSize}"
             class="flex spc-btw"
+            id="task-flex-container"
         >
             <div 
                 :class="{expandable: hasChildren}" id="task-text-wrapper"
@@ -46,6 +47,7 @@
                 :parentList="task.subtasks"
                 @deleteTask="task.subtasks.splice(index, 1)"
                 @checkNextSib="checkNextSib(index, task.subtasks)"
+                @statuschange="checkStatus"
             ></app-task>
             <!-- will clean this ^ mess soon enough -->
         </div>
@@ -54,6 +56,8 @@
 
 <script>
 import appTaskControls from './appTaskControls.vue'
+import bus from '../../bus.js';
+
 export default {
     props: ["task", "depth", "generateTask", "checkNextSib", "parentList"],
     components:{
@@ -86,6 +90,7 @@ export default {
             }
             return size;
         },
+
         taskIndicator(){
             let value ="";
             value += this.hasChildren ? 'fas fa-caret-right' : 'fas fa-circle';
@@ -94,17 +99,25 @@ export default {
             if(status != "active"){ value += status == "done" ? " done" : " failed"}
             return value;
         },
+
         taskIndLine(){
             //has to be expanded otherwise it doesn't serve much purpose
             return (this.task.expanded && this.task.hasNextSib) ? 'task-ind-line' : "";
-        }
+        },
+
+        
 
     },
     // ====== WATCHED ========
     watch:{
         parentList(){
             this.testNextSib();
+        },
+        'task.status'(){
+            this.$emit("statuschange");
+            bus.$emit("statuschange");
         }
+
     },
 
     // ====== METHODS ========
@@ -193,7 +206,7 @@ export default {
                         range = document.createRange(),
                         sel = window.getSelection();
 
-                    console.log(this.$refs.taskP);
+                    // console.log(this.$refs.taskP);
 
                     range.setStart(elText, elText.length-1);
                     range.collapse(true);
@@ -201,9 +214,26 @@ export default {
                     sel.addRange(range)
                     el.focus()
                 },
-                1
             )
         },
+
+        //this is to check if the status is to turn green because all the children are green.
+        checkStatus(){
+            const length = this.task.subtasks.length; 
+            if(length && this.task.status !== "failed"){
+                let counter = 0;
+                for(const task of this.task.subtasks){
+                    if(task.status === "done"){
+                        counter++;
+                    }
+                }
+                if(counter === length){
+                    this.task.status = "done";
+                } else {
+                    this.task.status = "active";
+                }
+            }
+        }
         
             
     },
@@ -220,6 +250,8 @@ export default {
         this.testNextSib();
 
     },
+    updated(){
+    }
 
 }
 </script>
@@ -231,11 +263,13 @@ export default {
         line-height: 2rem;
         height: fit-content;
     }
+
     #task-text-wrapper{
         font-weight: 200;
-        max-width: 83%;
+        /* max-width: 73vw; */
         display: flex;
         align-items: flex-start;
+
         
 
     }
@@ -263,7 +297,6 @@ export default {
         word-wrap:break-word;
         word-break: break-all;
         margin-left: .25rem;
-        /* background: rgba(61, 255, 22, 0.281); */
         /* border: 1px solid black; */
     }
 

@@ -11,7 +11,7 @@ export default {
     methods:{
         menuEvent(type){
             this.$emit("menuevent", type)
-        }
+        },
     }
 }
 </script>
