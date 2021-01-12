@@ -1,15 +1,21 @@
 ## changes:
-- fixed task-controls width sizing problem through "flex-shrink: 0";
-- added the %done counter;
-- made it so if all the subtasks are green, the parent is made green; The other way could be implemented (if parent is red, all children are red) but I feel that there's value in knowing which subtasks were accomplished even when the main task failed.
+- save/load tasks from localstorage 
+- rearm now through checkmark/cross buttons
+- removed "fail" button. "failed" is assigned to tasks that have not been completed at the end of the day.
+- editing through double click.
+
+## dicussion
+- should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day?
 
 ## Todo 
+- [ ] make menu/add functionalities happen through a right click menu,
+- [ ] parser to convert text into tasks (1. main task ;; 1.1 sub1 ;; 1.2 sub2 ;;);
 - [x] finish the controls menu.
 - [x] make appTask self contained (no more logic in appTasks). --> doesn't make much sense. the cycle gotta start somewhere
 - [x] redo the nextSib thing.
 - [ ] expirement with v-once on controls for performance.
 - [ ] animations.
-- [ ] % counter. Not there for accuracy but to provide some psychological feedback. Assumption is that each task = 1/total %.
+- [x] % counter. Not there for accuracy but to provide some psychological feedback. Assumption is that each task = 1/total %.
 
 ## Features to add
 - search -> searches tasks/subtasks, brings task + highlights matches.
@@ -19,3 +25,4 @@
 
 ## Bugs
 - cursor not blinking on new task. Believed to be caused by empty innerText. cursor in nonEmpty innerText does blink
+<!-- - cursor one letter behind when editing -->

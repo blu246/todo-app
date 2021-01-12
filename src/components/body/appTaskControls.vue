@@ -2,9 +2,12 @@
     <div class="menu-container">
         <i class="fas fa-ellipsis-h" @click="showMenu = !showMenu" ref="menuBtn"></i>
         <i class="fas fa-plus" @click="controlsEvent('newtask')"></i>
-        <i class="fas fa-times" @click="controlsEvent('failed')"></i>
-        <i class="fas fa-check" @click="controlsEvent('done')"></i>
-
+        <!-- <i class="fas fa-times" @click="controlsEvent('failed')"></i> -->
+        <i 
+            class="fas fa-check" 
+            :class="{done: status=='done'}"
+            @click="controlsEvent('done')"
+        ></i>
         <app-control-menu 
             class="menu"
             v-if="showMenu"
@@ -23,6 +26,7 @@ import bus from "../../bus.js"
 
 export default {
     components:{appControlMenu},
+    props:["status"],
 
     data(){return{
         showMenu: false
@@ -69,6 +73,10 @@ export default {
         position: absolute;
         z-index: 2;
         background: var(--bg-primary);
+    }
+    /* Yes, it is duplicated. Will I do something about 30 charactres? Maybe.. */
+    .done{
+        color: rgb(0, 226, 113);
     }
 
 </style>

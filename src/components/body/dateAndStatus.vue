@@ -58,7 +58,7 @@ export default {
     mounted(){
         this.interval = setInterval(()=>{this.dateObject = new Date()},30000);
         bus.$on("percchange", (val)=>{
-            this.percentageDone = (val * 100).toFixed(1) + "%";
+            this.percentageDone = (val * 100).toFixed(0) + "%";
         })
     },
     umounted(){

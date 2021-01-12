@@ -1,7 +1,7 @@
 <template>
     <ul class="shadow">
         <li @click="menuEvent('edit')">Edit</li>
-        <li @click="menuEvent('rearm')">Rearm</li>
+        <!-- <li @click="menuEvent('rearm')">Rearm</li> -->
         <li @click="menuEvent('delete')">Delete</li>
     </ul>        
 </template>

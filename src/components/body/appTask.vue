@@ -4,6 +4,7 @@
             :style="{fontSize: textSize}"
             class="flex spc-btw"
             id="task-flex-container"
+            :class="{'task-highlight': highlightTask}"
         >
             <div 
                 :class="{expandable: hasChildren}" id="task-text-wrapper"
@@ -14,11 +15,12 @@
 
                 <p 
                     ref="taskP"
-                    :class="{'task-highlight': highlightTask, placeholder: showPlaceholder,}"
+                    :class="{placeholder: showPlaceholder,}"
                     :contenteditable="task.editable"
                     @keydown="checkInput"
                     @paste="checkInput"
                     @cut="checkInput"
+                    @dblclick="menuEvent('edit')"
                 >
                 {{task.taskText}}
                 </p>
@@ -29,6 +31,7 @@
                 @mouseleave.native="highlightTask=false"
                 @controlsevent="controlsEvent"
                 @menuevent="menuEvent"
+                :status="task.status"
 
             ></app-task-controls>
 
@@ -68,6 +71,9 @@ export default {
         currentDepth: this.depth + 1,
         highlightTask: false,
         showPlaceholder: false,
+        // true if task has been edited in the currest session (1 sesion: page load --> leave/reload)
+        //this is a fix for the cursor being placed 1 letter in after it's been edited once.
+        wasEdited: false,
     }},
     // ====== computed ========
     computed:{
@@ -144,10 +150,9 @@ export default {
                 
                 if(e.key === "Enter"){
                     this.task.editable = false;
-                    const res = text.replace(/\n/, ""); 
+                    const res = text.replace(/\n/, "").replace(/\n/, ""); 
                     this.$refs.taskP.innerText = res; //remove the inserted \n
                     this.task.taskText = res;
-
                     if(isEmpty){
                         this.$emit("deleteTask");
                         // return;
@@ -167,11 +172,13 @@ export default {
         controlsEvent(type){
             switch(type){
                 case "done":
-                    this.task.status = "done";
+                    this.task.status = this.task.status == "done" ? "active" : "done";
                     break;
+
                 case "failed":
-                    this.task.status = "failed";
+                    this.task.status = this.task.status == "failed" ? "active" : "failed";
                     break;
+
                 case "newtask":
                     this.newTask();
                     break;
@@ -185,9 +192,9 @@ export default {
                     this.focusTask();   
                     break;
                 
-                case "rearm":
-                    this.task.status = "active"
-                    break;
+                // case "rearm":
+                //     this.task.status = "active"
+                //     break;
 
                 case "delete":
                     this.$emit("deleteTask");
@@ -206,14 +213,15 @@ export default {
                         range = document.createRange(),
                         sel = window.getSelection();
 
-                    // console.log(this.$refs.taskP);
+                    //fix for cursor placed 1 letter in after 1st edit.
+                    const modifier = this.task.firstEdit ? 1 : 0;
 
-                    range.setStart(elText, elText.length-1);
+                    range.setStart(elText, elText.length - modifier);
                     range.collapse(true);
                     sel.removeAllRanges()
                     sel.addRange(range)
                     el.focus()
-                },
+                }, 1
             )
         },
 
@@ -240,12 +248,12 @@ export default {
 
 //======= MOUNTED =========
     mounted(){ 
-        //check input
-        this.checkInput("");
-
-        //focuses on new task created
-        this.focusTask();
-
+        if(this.task.editable){
+            //check input
+            this.checkInput("");
+            //focuses on new task created
+            this.focusTask();
+        }
         // See whether to render the line below the taskIndicator or not
         this.testNextSib();
 
@@ -258,10 +266,10 @@ export default {
 
 <style scoped>
     #task{
-        /* border: 1px solid #aaa; */
         padding-left: 1rem;
         line-height: 2rem;
         height: fit-content;
+        /* border: 1px solid #333; */
     }
 
     #task-text-wrapper{
@@ -269,13 +277,15 @@ export default {
         /* max-width: 73vw; */
         display: flex;
         align-items: flex-start;
+        /* padding-left: 1rem; */
+
 
         
 
     }
-    p.task-highlight{
+    .task-highlight{
         background: rgb(237, 251, 255);
-        /* transform: scale(110%) translateX(4%); */
+        /* border: 1px solid #eee */
     }
     .expandable:hover{
         cursor: pointer;

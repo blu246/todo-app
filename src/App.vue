@@ -1,7 +1,7 @@
 <template>
   <div id="app" @click="bodyClicked">
     <app-header></app-header>
-    <app-body></app-body>
+    <app-body ></app-body>
   </div>
 </template>
 
@@ -13,7 +13,7 @@ import bus from "./bus.js"
 export default {
   components:{
     appHeader,
-    appBody
+    appBody,
   },
   methods:{
     bodyClicked(e){

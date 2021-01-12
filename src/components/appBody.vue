@@ -2,7 +2,8 @@
     <div class="body my-auto mx-2r container bg-primary px-1r py-2r shadow">
         <date-and-status></date-and-status>
         <app-tasks></app-tasks>
-        
+
+
     </div>
 </template>
 
@@ -26,7 +27,8 @@ export default {
     }
     div > div{
         margin-bottom: 2rem;
-    }    
+    }
+
     
 </style>
 

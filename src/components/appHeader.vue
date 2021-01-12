@@ -21,7 +21,7 @@ export default {
     methods:{
         updateDateTime(){
             const date = new Date();
-            this.date = date.getUTCDate() + "/" + (date.getUTCMonth()+1);
+            this.date = this.leadingZero(date.getUTCDate()) + "/" + this.leadingZero((date.getUTCMonth()+1));
             this.time = this.leadingZero((date.getUTCHours()+1)) + ":" + this.leadingZero(date.getUTCMinutes()) + ":" + this.leadingZero(date.getSeconds());
         },
         leadingZero(number){

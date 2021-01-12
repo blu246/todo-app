@@ -21,51 +21,48 @@ export default {
         appTask
     },
     data(){return{
-        testTask: {
-            taskText: "some text here",
-            expanded: false,
-            status: "active",
-            hasNextSib: false,
-            editable: false,
-            subtasks: [
-                {
-                    taskText: "this is a subtask", 
-                    expanded: false,
-                    status: "active",
-                    hasNextSib: false,
-                    editable: false,
+        // testTask: {
+        //     taskText: "some text here",
+        //     expanded: false,
+        //     status: "active",
+        //     hasNextSib: false,
+        //     editable: false,
+        //     subtasks: [
+        //         {
+        //             taskText: "this is a subtask", 
+        //             expanded: false,
+        //             status: "active",
+        //             hasNextSib: false,
+        //             editable: false,
 
                 
-                    subtasks: [
-                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false,editable: false,},
-                        {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false, editable: false,},
+        //             subtasks: [
+        //                 {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false,editable: false,},
+        //                 {taskText: "level 3 subtask", expanded: false, subtasks:[],status: "active",hasNextSib: false, editable: false,},
 
-                    ]
-                },
-                {taskText: "this is another subtask", expanded: false, subtasks: [],status: "active",hasNextSib: false, editable: false,}
-            ]
-        },
-        tasksList:[
-            this.generateTask("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-            
-        ],
-        
+        //             ]
+        //         },
+        //         {taskText: "this is another subtask", expanded: false, subtasks: [],status: "active",hasNextSib: false, editable: false,}
+        //     ]
+        // },
+        tasksList: [],
     }},
 
-    computed:{
-
-    },
     watch:{
-        tasksList(){
-            //to update % upon new task creation
-            bus.$emit("statuschange");
-        }
-    },
-    
-    methods:{
-        log(x){
-            console.log(x);
+        tasksList:{
+            deep: true,
+            handler(){
+                //to update %done upon new task creation
+                bus.$emit("statuschange");
+                this.storeTasksList();
+
+
+            }
         },
+    },
+
+//////////// METHODS ///////////
+    methods:{
         generateTask(text=""){
             return {
                 taskText: text,
@@ -107,9 +104,27 @@ export default {
                 }
             }
             return  total/denom;
+        },
+
+        todaysDate(){
+            const date = new Date(); 
+            return date.getUTCDate() + "-" + (date.getUTCMonth()+1) + "-" + date.getUTCFullYear();
+
+        },
+        storeTasksList(){
+            //storing all the days in a [year].[month].[day] object will make it neater but retreiving the data means retreiving the whole massive object. ==> Why I'm storing each day in its own "day/month/date" localstorage entry.
+             
+            const data = JSON.stringify(this.tasksList);
+            window.localStorage.setItem(this.todaysDate, data);
+        },
+        retrieveTasksList(day = this.todaysDate){
+            let data = window.localStorage.getItem(day);
+            if(!data){data="[]"}
+            this.tasksList = JSON.parse(data);
         }
-        
     },
+    
+    //////////// HOOKS ///////////
     created(){
         bus.$on("newtask", ()=>{this.newTask();});
         this.tasksList.push(this.testTask)
@@ -117,7 +132,10 @@ export default {
         bus.$on("statuschange", ()=>{
             bus.$emit("percchange", this.calcPerc(this.tasksList));
         })
-    }
+
+        this.retrieveTasksList();
+    },
+
     
     
 }
