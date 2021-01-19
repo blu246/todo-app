@@ -82,6 +82,8 @@ export default {
 
         //it's a method and not a computed prop cause it needs to call itself.
         calcPerc(list){
+            if(!this.tasksList.length){return -1}
+
             const denom = list.length;
             let total = 0; 
 
@@ -103,6 +105,9 @@ export default {
                     
                 }
             }
+            //for when denom=0, to avoid returning NaN;
+            if(denom==0){return 0}
+
             return  total/denom;
         },
 
@@ -128,6 +133,7 @@ export default {
     created(){
         bus.$on("newtask", ()=>{this.newTask();});
         this.tasksList.push(this.testTask)
+        
 
         bus.$on("statuschange", ()=>{
             bus.$emit("percchange", this.calcPerc(this.tasksList));

@@ -8,24 +8,24 @@
             :class="{done: status=='done'}"
             @click="controlsEvent('done')"
         ></i>
-        <app-control-menu 
+        <!-- <app-control-menu 
             class="menu"
             v-if="showMenu"
             @mouseleave.native="showMenu = false"
             @click.native="showMenu = false"
             @menuevent="menuEvent"
         >
-        </app-control-menu>
+        </app-control-menu> -->
 
     </div>
 </template>
 
 <script>
-import appControlMenu from "./appControlsMenu.vue"
+// import appControlMenu from "./appControlsMenu.vue"
 import bus from "../../bus.js"
 
 export default {
-    components:{appControlMenu},
+    // components:{appControlMenu},
     props:["status"],
 
     data(){return{
@@ -69,11 +69,7 @@ export default {
         position: relative;
         flex-shrink: 0;
     }
-    .menu{
-        position: absolute;
-        z-index: 2;
-        background: var(--bg-primary);
-    }
+    
     /* Yes, it is duplicated. Will I do something about 30 charactres? Maybe.. */
     .done{
         color: rgb(0, 226, 113);

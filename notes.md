@@ -1,8 +1,6 @@
 ## changes:
-- save/load tasks from localstorage 
-- rearm now through checkmark/cross buttons
-- removed "fail" button. "failed" is assigned to tasks that have not been completed at the end of the day.
-- editing through double click.
+- hovering over task highlights whole task, instead of only hovering on controls triggering it.
+- implemented custom right click menu
 
 ## dicussion
 - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day?

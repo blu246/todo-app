@@ -2,7 +2,7 @@
     <div class="flex spc-btw center-y"> 
             <h1>
                 {{todaysDate}} 
-                <h3>({{percentageDone + " done"}})</h3>
+                <h3 v-if="!(percVal==-1)">({{percString}})</h3>
             </h1>
 
             <h2 @click="newTask">
@@ -16,7 +16,7 @@
 import bus from "../../bus.js"
 export default {
     data(){return{
-        percentageDone: "0%",
+        percVal: 0,
         dateObject: new Date(),
         interval: "",
     }},
@@ -53,12 +53,15 @@ export default {
             //because how dare english have consistent pronounciation
 
             return `${dayName}, ${day+ordinal} of ${month}`;
+        },
+        percString(){
+            return (this.percVal * 100).toFixed(0) + "% done";
         }
     },
     mounted(){
         this.interval = setInterval(()=>{this.dateObject = new Date()},30000);
         bus.$on("percchange", (val)=>{
-            this.percentageDone = (val * 100).toFixed(0) + "%";
+            this.percVal = val;
         })
     },
     umounted(){

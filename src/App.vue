@@ -1,5 +1,8 @@
 <template>
-  <div id="app" @click="bodyClicked">
+  <div id="app" 
+    @click="reportBodyClicks($event, 'click')"
+    @contextmenu="reportBodyClicks($event, 'rclick')"
+  >
     <app-header></app-header>
     <app-body ></app-body>
   </div>
@@ -16,8 +19,8 @@ export default {
     appBody,
   },
   methods:{
-    bodyClicked(e){
-      bus.$emit('bodyclicked', e)
+    reportBodyClicks(e, type){
+      bus.$emit('bodyclicked', {e, type});
     }
   },
 

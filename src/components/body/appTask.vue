@@ -5,10 +5,15 @@
             class="flex spc-btw"
             id="task-flex-container"
             :class="{'task-highlight': highlightTask}"
+            @contextmenu="showContextMenu"
+            ref="taskContent"
+
         >
+        
             <div 
                 :class="{expandable: hasChildren}" id="task-text-wrapper"
-                @click="expandTask"
+                @click=" expandTask()"
+                
             >
 
                 <div id="i-wrapper"><i :class="taskIndicator"></i></div>
@@ -20,15 +25,12 @@
                     @keydown="checkInput"
                     @paste="checkInput"
                     @cut="checkInput"
-                    @dblclick="menuEvent('edit')"
                 >
                 {{task.taskText}}
                 </p>
             </div>
             
             <app-task-controls 
-                @mouseenter.native="highlightTask=true" 
-                @mouseleave.native="highlightTask=false"
                 @controlsevent="controlsEvent"
                 @menuevent="menuEvent"
                 :status="task.status"
@@ -53,27 +55,43 @@
                 @statuschange="checkStatus"
             ></app-task>
             <!-- will clean this ^ mess soon enough -->
+            <!-- will you though? -->
         </div>
+        <app-controls-menu 
+            v-if="showMenu"
+            :cords="menuCords"
+            @menuevent="menuEvent"
+        ></app-controls-menu>
+
     </div>
 </template>
 
 <script>
 import appTaskControls from './appTaskControls.vue'
+import appControlsMenu from './appControlsMenu.vue'
 import bus from '../../bus.js';
 
 export default {
     props: ["task", "depth", "generateTask", "checkNextSib", "parentList"],
     components:{
         appTask: ()=>import('./appTask.vue'),
-        appTaskControls
+        appTaskControls,
+        AppControlsMenu: appControlsMenu
     },
+
     data(){return{
         currentDepth: this.depth + 1,
         highlightTask: false,
         showPlaceholder: false,
+
         // true if task has been edited in the currest session (1 sesion: page load --> leave/reload)
         //this is a fix for the cursor being placed 1 letter in after it's been edited once.
         wasEdited: false,
+        showMenu: false,
+        menuCords: {},
+        nativeMenuPrimed: false,
+        prevNativeMenuTimer: "",
+
     }},
     // ====== computed ========
     computed:{
@@ -130,7 +148,7 @@ export default {
     methods:{
         expandTask(){
             if(this.hasChildren && !this.task.editable){
-                this.task.expanded = !this.task.expanded
+               this.task.expanded = !this.task.expanded
             }
         },
 
@@ -188,8 +206,7 @@ export default {
         menuEvent(type){
             switch(type){
                 case "edit":
-                    this.task.editable = true;
-                    this.focusTask();   
+                    this.editTask();
                     break;
                 
                 // case "rearm":
@@ -200,6 +217,12 @@ export default {
                     this.$emit("deleteTask");
 
             }
+        },
+        editTask(e){
+            this.task.editable = true;
+            this.focusTask();  
+            console.log(e);
+            if(e){e.preventDefault()}
         },
 
         focusTask(){
@@ -241,10 +264,45 @@ export default {
                     this.task.status = "active";
                 }
             }
+        },
+        showContextMenu(e){
+            e.preventDefault();
+
+            //apparently the code below is uneeded since a second right click on the same spot brings up the native menu anyways. Keeping it here in case this is just a weird anomaly.
+
+            //to allow the actual contextMenu to show if our custom menu is already showing (double click for native menu);
+            // if(this.nativeMenuPrimed){
+            //     console.log(33);
+            //     return; //allow native menu to show
+
+            // } else {
+            //     console.log(22);
+            //     this.nativeMenuPrimed = true;
+            //     this.prevNativeMenuTimer = setTimeout(()=>this.nativeMenuPrimed = false, 200)
+
+            // }
+
+
+            //need the delay cause otherwise the bodyclick event will hide the menu cause it registers after the event from here with a little delay, so we delay this so it happens after it;
+            setTimeout(()=>{
+                const tar = e.target, el = this.$refs.taskContent;
+                //check whether click is on task or one of the children (p or textnode);
+                if(
+                    el == tar || el == tar.parentElement || el == tar.parentElement.parentElement
+                    //is there a better way?
+                ){
+                    this.showMenu = true;
+                    this.menuCords = {x: e.clientX, y: e.clientY}
+
+                } else {
+                    this.showMenu = false;
+                }
+            }, 0)
+
         }
+    },  
         
             
-    },
 
 //======= MOUNTED =========
     mounted(){ 
@@ -257,7 +315,17 @@ export default {
         // See whether to render the line below the taskIndicator or not
         this.testNextSib();
 
+        //detect body clicks
+        bus.$on("bodyclicked", ({e, type})=>{
+            this.showMenu = false;
+           
+          e;type;
+
+        
+        })
     },
+
+/////////////////updated//////////// 
     updated(){
     }
 
@@ -278,15 +346,16 @@ export default {
         display: flex;
         align-items: flex-start;
         /* padding-left: 1rem; */
-
-
-        
+    }
+    #task-flex-container:hover{
+        background: rgba(28, 39, 71, 0.04);
 
     }
-    .task-highlight{
+
+    /* .task-highlight{
         background: rgb(237, 251, 255);
-        /* border: 1px solid #eee */
-    }
+    } */
+    
     .expandable:hover{
         cursor: pointer;
     }
