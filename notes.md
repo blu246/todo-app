@@ -1,8 +1,5 @@
 ## changes:
-- expand/collapse all feature. two buttons cause the state isn't binary (all tasks collapsed OR expanded). 
-- expand/collapse all on individual tasks.
-- changed newTask to "+"
-- taskLine removed from top level tasks (cause there's no need)
+- confirm of delete task when it has children
 
 
 

@@ -59,6 +59,7 @@
         <app-controls-menu 
             v-if="showMenu"
             :cords="menuCords"
+            :hasChildren="hasChildren"
             @menuevent="menuEvent"
         ></app-controls-menu>
 
