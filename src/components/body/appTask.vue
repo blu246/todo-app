@@ -12,7 +12,7 @@
         
             <div 
                 :class="{expandable: hasChildren}" id="task-text-wrapper"
-                @click=" expandTask()"
+                @click=" expandTask"
                 
             >
 
@@ -31,7 +31,7 @@
             </div>
             
             <app-task-controls 
-                @controlsevent="controlsEvent"
+                @taskdone="controlsEvent('done')"
                 @menuevent="menuEvent"
                 :status="task.status"
 
@@ -52,7 +52,6 @@
                 :parentList="task.subtasks"
                 @deleteTask="task.subtasks.splice(index, 1)"
                 @checkNextSib="checkNextSib(index, task.subtasks)"
-                @statuschange="checkStatus"
             ></app-task>
             <!-- will clean this ^ mess soon enough -->
             <!-- will you though? -->
@@ -137,10 +136,10 @@ export default {
         parentList(){
             this.testNextSib();
         },
-        'task.status'(){
-            this.$emit("statuschange");
-            bus.$emit("statuschange");
-        }
+        // 'task.status'(){
+        //     this.$emit("statuschange");
+        //     bus.$emit("statuschange");
+        // }
 
     },
 
@@ -193,13 +192,13 @@ export default {
                     this.task.status = this.task.status == "done" ? "active" : "done";
                     break;
 
-                case "failed":
-                    this.task.status = this.task.status == "failed" ? "active" : "failed";
-                    break;
+                // case "failed":
+                //     this.task.status = this.task.status == "failed" ? "active" : "failed";
+                //     break;
 
-                case "newtask":
-                    this.newTask();
-                    break;
+                // case "newtask":
+                //     this.newTask();
+                //     break;
             }   
         },
 
@@ -212,6 +211,10 @@ export default {
                 // case "rearm":
                 //     this.task.status = "active"
                 //     break;
+
+                case "newtask":
+                    this.newTask();
+                    break;
 
                 case "delete":
                     this.$emit("deleteTask");
@@ -248,23 +251,29 @@ export default {
             )
         },
 
+
+        //don't see a point in this.
         //this is to check if the status is to turn green because all the children are green.
-        checkStatus(){
-            const length = this.task.subtasks.length; 
-            if(length && this.task.status !== "failed"){
-                let counter = 0;
-                for(const task of this.task.subtasks){
-                    if(task.status === "done"){
-                        counter++;
-                    }
-                }
-                if(counter === length){
-                    this.task.status = "done";
-                } else {
-                    this.task.status = "active";
-                }
-            }
-        },
+        // checkStatus(){
+        //    if(!this.task.expanded){
+        //         const length = this.task.subtasks.length; 
+
+        //         if(length && this.task.status !== "failed"){
+        //             let counter = 0;
+        //             for(const task of this.task.subtasks){
+        //                 if(task.status === "done"){
+        //                     counter++;
+        //                 }
+        //             }
+        //             if(counter === length){
+        //                 this.task.status = "done";
+        //             } else {
+        //                 this.task.status = "active";
+        //             }
+        //         }
+        //    }
+        // },
+
         showContextMenu(e){
             e.preventDefault();
 
@@ -292,7 +301,9 @@ export default {
                     //is there a better way?
                 ){
                     this.showMenu = true;
-                    this.menuCords = {x: e.clientX, y: e.clientY}
+                    //clientX/Y returns wrong position with expanded tasks.
+                    this.menuCords = {x: e.layerX, y: e.layerY}
+                    console.log(e);
 
                 } else {
                     this.showMenu = false;

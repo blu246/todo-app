@@ -1,5 +1,6 @@
 <template>
     <ul class="shadow" ref="ul">
+        <li @click="menuEvent('newtask')">Add task</li>
         <li @click="menuEvent('edit')">Edit</li>
         <!-- <li @click="menuEvent('rearm')">Rearm</li> -->
         <li @click="menuEvent('delete')">Delete</li>

@@ -1,7 +1,6 @@
 ## changes:
-- hovering over task highlights whole task, instead of only hovering on controls triggering it.
-- implemented custom right click menu
-
+- cleaned, a bit, the taskControls comp. it only houses the 'done' button now
+- add subTask through contextMenu
 ## dicussion
 - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day?
 

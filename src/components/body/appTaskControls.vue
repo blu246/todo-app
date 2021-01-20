@@ -1,12 +1,12 @@
 <template>
-    <div class="menu-container">
-        <i class="fas fa-ellipsis-h" @click="showMenu = !showMenu" ref="menuBtn"></i>
-        <i class="fas fa-plus" @click="controlsEvent('newtask')"></i>
+    <!-- <div class="menu-container"> -->
+        <!-- <i class="fas fa-ellipsis-h" @click="showMenu = !showMenu" ref="menuBtn"></i> -->
+        <!-- <i class="fas fa-plus" @click="controlsEvent('newtask')"></i> -->
         <!-- <i class="fas fa-times" @click="controlsEvent('failed')"></i> -->
-        <i 
+        <i
             class="fas fa-check" 
             :class="{done: status=='done'}"
-            @click="controlsEvent('done')"
+            @click="$emit('taskdone')"
         ></i>
         <!-- <app-control-menu 
             class="menu"
@@ -17,47 +17,27 @@
         >
         </app-control-menu> -->
 
-    </div>
+    <!-- </div> -->
 </template>
 
 <script>
 // import appControlMenu from "./appControlsMenu.vue"
-import bus from "../../bus.js"
+// import bus from "../../bus.js"
 
 export default {
     // components:{appControlMenu},
     props:["status"],
 
-    data(){return{
-        showMenu: false
-    }},
-
-    methods:{
-        controlsEvent(type){
-            this.$emit("controlsevent",type);
-        },
-        
-        menuEvent(type){
-            this.$emit("menuevent", type);
-        }
-    },
-
-    created(){
-        bus.$on("bodyclicked", (e)=>{
-            if(e.target == this.$refs.menuBtn){
-                return;
-            }
-            this.showMenu = false;
-        })
-        //We'll make it hover based instead.
-        //did that ^. will keep it as another way to close 
-    }   
+    // data(){return{
+    //     // showMenu: false
+    // }},
+  
 }
 </script>
 
 <style scoped>
     i{
-        margin-left: 1.5rem;
+        margin-right: .5rem;
         font-size: 1.5rem;
         transform: scale(80%)
     }
@@ -65,10 +45,10 @@ export default {
         cursor: pointer;
         color: var(--primary-color);
     }
-    .menu-container{
+    /* .menu-container{
         position: relative;
         flex-shrink: 0;
-    }
+    } */
     
     /* Yes, it is duplicated. Will I do something about 30 charactres? Maybe.. */
     .done{
