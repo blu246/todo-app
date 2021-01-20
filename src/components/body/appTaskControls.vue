@@ -39,7 +39,8 @@ export default {
     i{
         margin-right: .5rem;
         font-size: 1.5rem;
-        transform: scale(80%)
+        transform: scale(80%) translateY(12%);
+    
     }
     i:hover{
         cursor: pointer;

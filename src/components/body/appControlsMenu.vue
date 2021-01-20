@@ -5,8 +5,10 @@
         <li @click="deleteTask"  :class="{warn: deleteWarned}" >{{deleteText}}</li>
 
         <li @click="menuEvent('edit')">Edit</li>
-        <li @click="menuEvent('expandall')">Expand all</li>
-        <li @click="menuEvent('collapseall')">Collapse all</li>
+        <template v-if="hasChildren">
+            <li @click="menuEvent('expandall')">Expand all</li>
+            <li @click="menuEvent('collapseall')">Collapse all</li>
+        </template>
     </ul>        
 </template>
 
@@ -27,6 +29,7 @@ export default {
             this.$emit("menuevent", type)
         },
 
+        //whether to delete immediately or ask for confirmation.
         deleteTask(e){
             if(this.hasChildren && !this.deleteWarned){
                 this.deleteWarned = true;

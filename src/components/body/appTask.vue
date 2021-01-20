@@ -50,6 +50,7 @@
                 :has="checkNextSib"
                 :checkNextSib="checkNextSib"
                 :parentList="task.subtasks"
+                :expandCollapse="expandCollapse"
                 @deleteTask="task.subtasks.splice(index, 1)"
                 @checkNextSib="checkNextSib(index, task.subtasks)"
             ></app-task>

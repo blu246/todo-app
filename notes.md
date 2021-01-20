@@ -1,5 +1,5 @@
 ## changes:
-- confirm of delete task when it has children
+- No tasks screen
 
 
 
@@ -7,7 +7,7 @@
 - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day?
 
 ## Todo 
-- [ ] make menu/add functionalities happen through a right click menu,
+- [x] make menu/add functionalities happen through a right click menu,
 - [ ] parser to convert text into tasks (1. main task ;; 1.1 sub1 ;; 1.2 sub2 ;;);
 - [x] finish the controls menu.
 - [x] make appTask self contained (no more logic in appTasks). --> doesn't make much sense. the cycle gotta start somewhere

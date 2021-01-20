@@ -1,16 +1,20 @@
 <template>
     <div class="task-container">
-            <app-task 
-                v-for="(task, index) in tasksList"
-                :key="index"
-                :task="task" 
-                :depth=0
-                :generateTask="generateTask"
-                :parentList="tasksList"
-                :expandCollapse="expandCollapse"
-                @deleteTask="tasksList.splice(index, 1)"
-                
-            ></app-task>
+            <template v-if="tasksList.length">
+                <app-task 
+                    v-for="(task, index) in tasksList"
+                    :key="index"
+                    :task="task" 
+                    :depth=0
+                    :generateTask="generateTask"
+                    :parentList="tasksList"
+                    :expandCollapse="expandCollapse"
+                    @deleteTask="tasksList.splice(index, 1)"
+                ></app-task>
+            </template>
+
+            <no-tasks v-else></no-tasks>
+
     </div>
     
 </template>
@@ -18,9 +22,12 @@
 <script>
 import bus from "../../bus.js"
 import appTask from "./appTask.vue"
+import noTasks from "./noTasks.vue"
 export default {
     components: {
-        appTask
+        appTask,
+        noTasks
+
     },
     data(){return{
         // testTask: {
