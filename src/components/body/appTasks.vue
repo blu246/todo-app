@@ -7,7 +7,9 @@
                 :depth=0
                 :generateTask="generateTask"
                 :parentList="tasksList"
+                :expandCollapse="expandCollapse"
                 @deleteTask="tasksList.splice(index, 1)"
+                
             ></app-task>
     </div>
     
@@ -126,18 +128,46 @@ export default {
             let data = window.localStorage.getItem(day);
             if(!data){data="[]"}
             this.tasksList = JSON.parse(data);
+        },
+
+        dateAndStatusControls(type){
+            switch(type){
+                case "newTask":
+                    this.newTask();
+                    break;
+                case 'expand':
+                    this.expandCollapse(this.tasksList, true);
+                    break;
+                case 'collapse':
+                    this.expandCollapse(this.tasksList, false);
+                    break;
+            }
+        },
+
+        expandCollapse(list, action){
+            //true-> expand. false -> collapse;
+            for(const task of list){
+                task.expanded = action;
+                if(task.subtasks.length){
+                    this.expandCollapse(task.subtasks, action);
+                }
+            }
         }
     },
     
     //////////// HOOKS ///////////
     created(){
-        bus.$on("newtask", ()=>{this.newTask();});
-        this.tasksList.push(this.testTask)
+
+        //listener for events
+        // bus.$on("newtask", ()=>{this.newTask();});
+        // this.tasksList.push(this.testTask)
         
 
         bus.$on("statuschange", ()=>{
             bus.$emit("percchange", this.calcPerc(this.tasksList));
         })
+
+        bus.$on("dateandstatuscontrols", (type)=>{this.dateAndStatusControls(type)});
 
         this.retrieveTasksList();
     },

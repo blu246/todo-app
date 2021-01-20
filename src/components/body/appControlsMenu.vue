@@ -1,9 +1,10 @@
 <template>
     <ul class="shadow" ref="ul">
         <li @click="menuEvent('newtask')">Add task</li>
-        <li @click="menuEvent('edit')">Edit</li>
-        <!-- <li @click="menuEvent('rearm')">Rearm</li> -->
         <li @click="menuEvent('delete')">Delete</li>
+        <li @click="menuEvent('edit')">Edit</li>
+        <li @click="menuEvent('expandall')">Expand all</li>
+        <li @click="menuEvent('collapseall')">Collapse all</li>
     </ul>        
 </template>
 
@@ -31,6 +32,7 @@ export default {
         z-index: 2;
         background: var(--bg-primary);
         padding: .2rem;
+        display: block;
     }
     li{
         list-style: none;

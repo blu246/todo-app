@@ -1,20 +1,24 @@
 <template>
-    <div class="flex spc-btw center-y"> 
+    <div class="flex spc-btw center-y container"> 
             <h1>
                 {{todaysDate}} 
                 <h3 v-if="!(percVal==-1)">({{percString}})</h3>
             </h1>
 
-            <h2 @click="newTask">
-                New Task
-            </h2>
+            <date-and-status-controls>
+
+            </date-and-status-controls>
 
     </div>
 </template>
 
 <script>
 import bus from "../../bus.js"
+import dateAndStatusControls from "./dateAndStatusControls.vue"
+
 export default {
+    components:{dateAndStatusControls},
+
     data(){return{
         percVal: 0,
         dateObject: new Date(),
@@ -91,16 +95,9 @@ export default {
         margin-left: -0.5rem;
 
     }
-    div{
+    .container{
         border-bottom: 2px solid #f2f2f2;
     }
-    h2{
-        /* font-weight: 200; */
-        font-size: 1.2rem;
-    }
-    h2:hover{
-        cursor: pointer;
-        color: var(--primary-color);
-    }
+
 
 </style>

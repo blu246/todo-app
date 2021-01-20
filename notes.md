@@ -1,6 +1,11 @@
 ## changes:
-- cleaned, a bit, the taskControls comp. it only houses the 'done' button now
-- add subTask through contextMenu
+- expand/collapse all feature. two buttons cause the state isn't binary (all tasks collapsed OR expanded). 
+- expand/collapse all on individual tasks.
+- changed newTask to "+"
+- taskLine removed from top level tasks (cause there's no need)
+
+
+
 ## dicussion
 - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day?
 

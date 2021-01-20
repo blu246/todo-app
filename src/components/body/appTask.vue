@@ -71,7 +71,7 @@ import appControlsMenu from './appControlsMenu.vue'
 import bus from '../../bus.js';
 
 export default {
-    props: ["task", "depth", "generateTask", "checkNextSib", "parentList"],
+    props: ["task", "depth", "generateTask", "checkNextSib", "parentList", "expandCollapse"],
     components:{
         appTask: ()=>import('./appTask.vue'),
         appTaskControls,
@@ -152,11 +152,13 @@ export default {
         },
 
         testNextSib(){
-            const list  = this.parentList;
-            for(let task of list){
-                task.hasNextSib = true;
+            const list  = this.task.subtasks;
+            if(list.length){
+                for(let task of list){
+                    task.hasNextSib = true;
+                }
+                list[list.length-1].hasNextSib = false;
             }
-            list[list.length-1].hasNextSib = false;
             //Yes! I know a child shouldn't mutate its parent's data, but in this recursive application, doing it the "proper" way would result in an unecessary duplication of lines. I already have enough of that, and I hate it.
         },
         checkInput(e){
@@ -218,13 +220,22 @@ export default {
 
                 case "delete":
                     this.$emit("deleteTask");
+                    break;
 
+                case "expandall":
+                    this.task.expanded = true;
+                    this.expandCollapse(this.task.subtasks, true);
+                    break;
+
+                case "collapseall":
+                    this.task.expanded = false;
+                    this.expandCollapse(this.task.subtasks, false);
+                    break;
             }
         },
         editTask(e){
             this.task.editable = true;
             this.focusTask();  
-            console.log(e);
             if(e){e.preventDefault()}
         },
 
@@ -303,7 +314,6 @@ export default {
                     this.showMenu = true;
                     //clientX/Y returns wrong position with expanded tasks.
                     this.menuCords = {x: e.layerX, y: e.layerY}
-                    console.log(e);
 
                 } else {
                     this.showMenu = false;
