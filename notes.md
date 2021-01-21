@@ -1,5 +1,6 @@
 ## changes:
-- No tasks screen
+- NoTasks screen.
+- changed menu so that there is no collapse/expand option in menu if task has no subtasks
 
 
 
