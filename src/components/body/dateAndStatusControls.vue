@@ -35,4 +35,10 @@ export default {
     .fa-caret-down, .fa-caret-up{
         transform: scale(115%);
     }
+
+@media only screen and (max-width: 500px){
+    i{
+        margin-left: 1.8rem ;
+    }
+}
 </style>

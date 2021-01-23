@@ -37,9 +37,10 @@ export default {
 
 <style scoped>
     i{
-        margin-right: .5rem;
-        font-size: 1.5rem;
-        transform: scale(80%) translateY(12%);
+        margin: .4rem .6rem 0 0;
+        font-size: 1.2rem;
+        /* transform: scale(80%) translateY(12%); */
+        padding-left: .5rem ;
     
     }
     i:hover{

@@ -1,13 +1,17 @@
 ## changes:
-- NoTasks screen.
-- changed menu so that there is no collapse/expand option in menu if task has no subtasks
-
+- Mobile friendly interface changes
+- fixed a little bug where the taskIndLine would keep being displayed after the children are deleted.
+- made task save on onBlur. More convenient way to save on mobile.
+- fix to task context menu where it displayed in the wrong position, AGAIN.
 
 
 ## dicussion
 - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day?
 
 ## Todo 
+- [ ] :3
+- [ ] make tasks delete on swipe on mobile
+- [ ] add ham menu for mobile (left of logo).
 - [x] make menu/add functionalities happen through a right click menu,
 - [ ] parser to convert text into tasks (1. main task ;; 1.1 sub1 ;; 1.2 sub2 ;;);
 - [x] finish the controls menu.

@@ -2,6 +2,7 @@
     <div class="task-container">
             <template v-if="tasksList.length">
                 <app-task 
+                    id="task"
                     v-for="(task, index) in tasksList"
                     :key="index"
                     :task="task" 
@@ -183,3 +184,13 @@ export default {
     
 }
 </script>
+
+<style scoped>
+
+    @media only screen and (max-width: 500px){
+    /* To remove the padding on the first task on mobile since space is more limited  */
+        #task{
+            padding-left: .1rem;
+        }
+    }
+</style>

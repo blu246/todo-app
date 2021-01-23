@@ -44,8 +44,21 @@ export default {
     mounted(){
         //set position to that of the cursor
         const el = this.$refs.ul;
-        el.style.top = this.cords.y + "px";
-        el.style.left = this.cords.x + "px";
+        let x = this.cords.x, y = this.cords.y;
+
+        //place the menu above the finger on mobile, a more convenient place.
+        if(
+            ('ontouchstart' in window ) ||  
+            ( navigator.maxTouchPoints > 0 ) ||  
+            ( navigator.msMaxTouchPoints > 0 )
+        ){
+            y -= el.clientWidth + el.clientWidth*0.5;
+            
+        }
+
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+
     }
 }
 </script>

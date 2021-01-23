@@ -25,6 +25,7 @@
                     @keydown="checkInput"
                     @paste="checkInput"
                     @cut="checkInput"
+                    @blur="checkInput($event, true)"
                 >
                 {{task.taskText}}
                 </p>
@@ -47,12 +48,10 @@
                 :task="subtask"
                 :depth="currentDepth"
                 :generateTask="generateTask"
-                :has="checkNextSib"
                 :checkNextSib="checkNextSib"
                 :parentList="task.subtasks"
                 :expandCollapse="expandCollapse"
                 @deleteTask="task.subtasks.splice(index, 1)"
-                @checkNextSib="checkNextSib(index, task.subtasks)"
             ></app-task>
             <!-- will clean this ^ mess soon enough -->
             <!-- will you though? -->
@@ -127,7 +126,7 @@ export default {
 
         taskIndLine(){
             //has to be expanded otherwise it doesn't serve much purpose
-            return (this.task.expanded && this.task.hasNextSib) ? 'task-ind-line' : "";
+            return (this.task.expanded && this.task.hasNextSib && this.hasChildren) ? 'task-ind-line' : "";
         },
 
         
@@ -163,7 +162,11 @@ export default {
             }
             //Yes! I know a child shouldn't mutate its parent's data, but in this recursive application, doing it the "proper" way would result in an unecessary duplication of lines. I already have enough of that, and I hate it.
         },
-        checkInput(e){
+        checkInput(e, isBlurSave){
+            if(isBlurSave){
+                e.key = "Enter"
+            }
+
             setTimeout(()=>{
                 const regexp = /^\s+$/g, 
                     text = this.$refs.taskP.innerText,
@@ -174,16 +177,19 @@ export default {
                     const res = text.replace(/\n/, "").replace(/\n/, ""); 
                     this.$refs.taskP.innerText = res; //remove the inserted \n
                     this.task.taskText = res;
+
                     if(isEmpty){
                         this.$emit("deleteTask");
-                        // return;
-                    }
+                    // return;
+                     }
+                    
                 }
                 this.showPlaceholder = isEmpty ? true : false;
                 
                 
             }, 2); //placeholder doesn't work properly; isEmpty is set falsly without the delay.
         },
+        
         newTask(){
             const task = this.generateTask("");
             this.task.subtasks.push(task);
@@ -315,8 +321,16 @@ export default {
                 ){
                     this.showMenu = true;
                     //clientX/Y returns wrong position with expanded tasks.
-                    this.menuCords = {x: e.layerX, y: e.layerY}
+                    //well, layerX/Y did the same on mobile, and clientX/Y fixed it '-'
+                    this.menuCords = {x: e.clientX, y: e.clientY}
 
+                    // for debugging later if it breaks again;
+                    // const client = [e.clientX, e.clientY];
+                    // const screen = [e.screenX, e.screenY];
+                    // const page   = [e.pageX, e.pageY];
+                    // console.log("client:", client);
+                    // console.log("screen:", screen);
+                    // console.log("page:", page);
                 } else {
                     this.showMenu = false;
                 }
@@ -360,18 +374,20 @@ export default {
         padding-left: 1rem;
         line-height: 2rem;
         height: fit-content;
-        /* border: 1px solid #333; */
     }
 
     #task-text-wrapper{
         font-weight: 200;
-        /* max-width: 73vw; */
+        max-width: 85vw;
         display: flex;
         align-items: flex-start;
+        position: relative;
         /* padding-left: 1rem; */
     }
+   
     #task-flex-container:hover{
         background: rgba(28, 39, 71, 0.04);
+
 
     }
 
@@ -399,6 +415,7 @@ export default {
         word-wrap:break-word;
         word-break: break-all;
         margin-left: .25rem;
+        font-weight: 300;
         /* border: 1px solid black; */
     }
 
@@ -433,6 +450,12 @@ export default {
         background: #eaeaea;
         top: 1.6em;
         left: 1.12em;
+    }
+
+    @media only screen and (max-width: 500px){
+        #task{
+            padding-left: .5rem;
+    }
     }
 
 

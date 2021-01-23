@@ -1,13 +1,13 @@
 <template>
-    <div class="flex spc-btw center-y container"> 
-            <h1>
-                {{todaysDate}} 
-                <h3 v-if="!(percVal==-1)">({{percString}})</h3>
-            </h1>
+    <div class="container"> 
+            <h1>{{todaysDate}}</h1>
 
-            <date-and-status-controls>
-
-            </date-and-status-controls>
+            <div id="perc-cont">
+                <h3 v-if="!(percVal==-1)">{{percString}}</h3>
+                <!-- simple fix to prevent controls from shifting when the h3 above isn't showing -->
+                <h3 v-else></h3>
+                <date-and-status-controls id="controls"></date-and-status-controls>
+            </div>
 
     </div>
 </template>
@@ -79,25 +79,48 @@ export default {
     h1{
         font-weight: 100;
         font-size: 2rem;
-        width: fit-content;
-    }
-    /* h1:after{
-        content: "";
-        display: block;
-        height: 2px;
-        background: #eee;
 
-    } */
+    }
     h3{
         font-size: 1.2rem;
         font-weight: 100;
-        display: inline-block;
-        margin-left: -0.5rem;
 
     }
+    h3:before{content: "("}
+    h3:after{content: ")"}
+
     .container{
         border-bottom: 2px solid #f2f2f2;
+        display: flex;
+
+    }
+    #perc-cont{
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-grow: 1;
+        padding-bottom: .25rem;
+    }
+   
+
+    @media only screen and (max-width:700px){
+        .container{
+            flex-direction: column;
+            padding: .4rem 0;
+        }
+        h1{
+            display: none;
+        }
+        h3{
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        h3:before{content: ""}
+        h3:after{content: ""}
     }
 
 
 </style>
+
+
+

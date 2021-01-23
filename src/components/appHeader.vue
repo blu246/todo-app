@@ -2,7 +2,7 @@
  <header class="shadow py-2r bg-primary">
      <div class="container flex spc-btw my-auto">
         <h1> <i class="fas fa-microchip"></i>BrainCache</h1>
-        <div class="flex center-y">
+        <div class="clock flex center-y">
             <h3>{{date}}</h3>
             <h2>{{time}}</h2>
         </div>
@@ -42,7 +42,7 @@ export default {
 
 <style scoped>
   
-    header > div{
+    .container{
         align-items: flex-end;
         padding-top: .4rem;
         padding-bottom: 0.1rem;
@@ -62,4 +62,18 @@ export default {
     h2{
         font-size: 1.8rem;
     }
+
+    @media only screen and (max-width: 600px) {
+        .container{
+            justify-content: center;
+        }
+        .clock{
+            display: none;
+            /* cause you got a clock on mobile */
+        }
+        h1{
+            font-size: 1.6rem;
+        }
+    }
+
 </style>
