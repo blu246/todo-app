@@ -52,7 +52,13 @@ export default {
             ( navigator.maxTouchPoints > 0 ) ||  
             ( navigator.msMaxTouchPoints > 0 )
         ){
-            y -= el.clientWidth + el.clientWidth*0.5;
+            //position menu above finger and in the middle
+            y -= el.clientHeight + 10;
+            x -= el.clientWidth / 2;
+
+            //flip the order of the menu so that the more likely to be used items are nearer.
+            this.$refs.ul.style.display = "flex";
+            this.$refs.ul.style.flexDirection = "column-reverse"
             
         }
 
@@ -65,7 +71,7 @@ export default {
 
 <style scoped>
     ul{
-        position: absolute;
+        position: fixed;
         z-index: 2;
         background: var(--bg-primary);
         padding: .2rem;
@@ -81,9 +87,11 @@ export default {
         color: var(--primary-color);
     }
     .warn{
-        background: rgba(255, 0, 0, 0.562)
+        background: rgb(255, 62, 49)
     }
     .warn:hover{
         color: inherit;
     }
+
+    
 </style>

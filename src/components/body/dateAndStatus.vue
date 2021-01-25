@@ -84,6 +84,7 @@ export default {
     h3{
         font-size: 1.2rem;
         font-weight: 100;
+        margin-left:.2rem
 
     }
     h3:before{content: "("}

@@ -1,15 +1,15 @@
 ## changes:
-- Mobile friendly interface changes
-- fixed a little bug where the taskIndLine would keep being displayed after the children are deleted.
-- made task save on onBlur. More convenient way to save on mobile.
-- fix to task context menu where it displayed in the wrong position, AGAIN.
+- fixed the menu position bug.. *sigh* again. This time for good hopefuly. changed it to "positon: fixed" instead of absolute.
+- fixed the taskIndLine on mobile 
+
 
 
 ## dicussion
 - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day?
 
 ## Todo 
-- [ ] :3
+- [ ] ---
+- [ ] History -> previous days, or even next days
 - [ ] make tasks delete on swipe on mobile
 - [ ] add ham menu for mobile (left of logo).
 - [x] make menu/add functionalities happen through a right click menu,

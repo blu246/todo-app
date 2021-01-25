@@ -3,7 +3,7 @@
      <div class="container flex spc-btw my-auto">
         <h1> <i class="fas fa-microchip"></i>BrainCache</h1>
         <div class="clock flex center-y">
-            <h3>{{date}}</h3>
+            <!-- <h3>{{date}}</h3> -->
             <h2>{{time}}</h2>
         </div>
      </div>
@@ -52,7 +52,7 @@ export default {
     }
 
     h2,h3{
-        font-weight: 200;
+        font-weight: 400;
     }
     h3{
         margin-right: .25rem;
@@ -61,6 +61,7 @@ export default {
     }
     h2{
         font-size: 1.8rem;
+        margin-right: .2rem;
     }
 
     @media only screen and (max-width: 600px) {

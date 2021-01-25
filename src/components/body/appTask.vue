@@ -89,8 +89,6 @@ export default {
         wasEdited: false,
         showMenu: false,
         menuCords: {},
-        nativeMenuPrimed: false,
-        prevNativeMenuTimer: "",
 
     }},
     // ====== computed ========
@@ -122,10 +120,21 @@ export default {
             const status = this.task.status;
             if(status != "active"){ value += status == "done" ? " done" : " failed"}
             return value;
+
         },
 
         taskIndLine(){
             //has to be expanded otherwise it doesn't serve much purpose
+            this.parentList;
+            this.testNextSib();
+            if(this.task.taskText == "22"){
+                console.log(this.task.taskText, "updated")
+                console.log(this.task.expanded && this.task.hasNextSib && this.hasChildren)
+                console.log(this.task.expanded,  this.task.hasNextSib,  this.hasChildren)
+                console.log("expanded, hasNextSib, HasChildren ");
+                console.log("parent list:", this.parentList[this.parentList.length-1].taskText)
+            }
+
             return (this.task.expanded && this.task.hasNextSib && this.hasChildren) ? 'task-ind-line' : "";
         },
 
@@ -163,6 +172,8 @@ export default {
             //Yes! I know a child shouldn't mutate its parent's data, but in this recursive application, doing it the "proper" way would result in an unecessary duplication of lines. I already have enough of that, and I hate it.
         },
         checkInput(e, isBlurSave){
+
+            //keeps the function tidy. Basically if element loses focus, treats it as a "Enter" input
             if(isBlurSave){
                 e.key = "Enter"
             }
@@ -177,6 +188,8 @@ export default {
                     const res = text.replace(/\n/, "").replace(/\n/, ""); 
                     this.$refs.taskP.innerText = res; //remove the inserted \n
                     this.task.taskText = res;
+
+                    this.testNextSib();
 
                     if(isEmpty){
                         this.$emit("deleteTask");
@@ -381,7 +394,7 @@ export default {
         max-width: 85vw;
         display: flex;
         align-items: flex-start;
-        position: relative;
+        /* position: relative; */
         /* padding-left: 1rem; */
     }
    
@@ -455,6 +468,9 @@ export default {
     @media only screen and (max-width: 500px){
         #task{
             padding-left: .5rem;
+        }
+        .task-ind-line:after{
+            left: .6rem;
     }
     }
 
