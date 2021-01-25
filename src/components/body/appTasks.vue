@@ -1,5 +1,6 @@
 <template>
-    <div class="task-container">
+    <div class="tasks-container">
+        <!-- if something is broken, change tasks-con to task-con -->
             <template v-if="tasksList.length">
                 <app-task 
                     id="task"

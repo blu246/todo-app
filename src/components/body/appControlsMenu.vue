@@ -64,6 +64,7 @@ export default {
 
         el.style.left = x + "px";
         el.style.top = y + "px";
+        console.log(x,y);
 
     }
 }
@@ -71,7 +72,7 @@ export default {
 
 <style scoped>
     ul{
-        position: fixed;
+        position: absolute;
         z-index: 2;
         background: var(--bg-primary);
         padding: .2rem;

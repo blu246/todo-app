@@ -7,15 +7,21 @@
             :class="{'task-highlight': highlightTask}"
             @contextmenu="showContextMenu"
             ref="taskContent"
-
         >
+
+            <app-controls-menu 
+                v-if="showMenu"
+                :cords="menuCords"
+                :hasChildren="hasChildren"
+                @menuevent="menuEvent"
+                id="controls-menu"
+            ></app-controls-menu>
+
         
             <div 
                 :class="{expandable: hasChildren}" id="task-text-wrapper"
                 @click=" expandTask"
-                
             >
-
                 <div id="i-wrapper"><i :class="taskIndicator"></i></div>
 
                 <p 
@@ -38,6 +44,7 @@
 
             ></app-task-controls>
 
+
         </div>
 
 
@@ -56,12 +63,7 @@
             <!-- will clean this ^ mess soon enough -->
             <!-- will you though? -->
         </div>
-        <app-controls-menu 
-            v-if="showMenu"
-            :cords="menuCords"
-            :hasChildren="hasChildren"
-            @menuevent="menuEvent"
-        ></app-controls-menu>
+        
 
     </div>
 </template>
@@ -124,17 +126,7 @@ export default {
         },
 
         taskIndLine(){
-            //has to be expanded otherwise it doesn't serve much purpose
-            this.parentList;
             this.testNextSib();
-            if(this.task.taskText == "22"){
-                console.log(this.task.taskText, "updated")
-                console.log(this.task.expanded && this.task.hasNextSib && this.hasChildren)
-                console.log(this.task.expanded,  this.task.hasNextSib,  this.hasChildren)
-                console.log("expanded, hasNextSib, HasChildren ");
-                console.log("parent list:", this.parentList[this.parentList.length-1].taskText)
-            }
-
             return (this.task.expanded && this.task.hasNextSib && this.hasChildren) ? 'task-ind-line' : "";
         },
 
@@ -143,14 +135,6 @@ export default {
     },
     // ====== WATCHED ========
     watch:{
-        parentList(){
-            this.testNextSib();
-        },
-        // 'task.status'(){
-        //     this.$emit("statuschange");
-        //     bus.$emit("statuschange");
-        // }
-
     },
 
     // ====== METHODS ========
@@ -189,7 +173,6 @@ export default {
                     this.$refs.taskP.innerText = res; //remove the inserted \n
                     this.task.taskText = res;
 
-                    this.testNextSib();
 
                     if(isEmpty){
                         this.$emit("deleteTask");
@@ -333,17 +316,16 @@ export default {
                     //is there a better way?
                 ){
                     this.showMenu = true;
-                    //clientX/Y returns wrong position with expanded tasks.
-                    //well, layerX/Y did the same on mobile, and clientX/Y fixed it '-'
-                    this.menuCords = {x: e.clientX, y: e.clientY}
+                    
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left; //x position within the element.
+                    const y = e.clientY - rect.top
 
-                    // for debugging later if it breaks again;
-                    // const client = [e.clientX, e.clientY];
-                    // const screen = [e.screenX, e.screenY];
-                    // const page   = [e.pageX, e.pageY];
-                    // console.log("client:", client);
-                    // console.log("screen:", screen);
-                    // console.log("page:", page);
+                    // this.menuCords = {x: e.clientX, y: e.clientY}
+                    this.menuCords = {x: x, y: y}
+
+
+                   
                 } else {
                     this.showMenu = false;
                 }
@@ -394,14 +376,14 @@ export default {
         max-width: 85vw;
         display: flex;
         align-items: flex-start;
-        /* position: relative; */
         /* padding-left: 1rem; */
     }
-   
+    
     #task-flex-container:hover{
         background: rgba(28, 39, 71, 0.04);
-
-
+    }
+    #task-flex-container{
+        position: relative;
     }
 
     /* .task-highlight{
@@ -451,7 +433,6 @@ export default {
         text-decoration: line-through;
     }
     .task-ind-line{
-        /* background: rgb(228, 219, 180); */
         position: relative;
     }
     .task-ind-line:after{

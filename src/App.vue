@@ -24,7 +24,7 @@ export default {
       bus.$emit('bodyclicked', {e, type});
     },
     checkOverflow(){
-      
+
     }
 
     // -------- keep this here in case this breaks again --------

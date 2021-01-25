@@ -1,7 +1,5 @@
 ## changes:
-- fixed the menu position bug.. *sigh* again. This time for good hopefuly. changed it to "positon: fixed" instead of absolute.
-- fixed the taskIndLine on mobile 
-
+- fixed tasks menu position bug, for good. It was actually caused by the root task elem being positioned "relative" when taskIndLine was shown. When it wasn't, it was position relative to the body.
 
 
 ## dicussion
