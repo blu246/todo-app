@@ -1,15 +1,15 @@
 <template>
-        <ul class="shadow" ref="ul">
-        <li @click="menuEvent('newtask')">Add task</li>
-
-        <li @click="deleteTask"  :class="{warn: deleteWarned}" >{{deleteText}}</li>
-
-        <li @click="menuEvent('edit')">Edit</li>
-        <template v-if="hasChildren">
-            <li @click="menuEvent('expandall')">Expand all</li>
-            <li @click="menuEvent('collapseall')">Collapse all</li>
-        </template>
-    </ul>        
+    <div class="menu shadow" ref="menuEl">
+        <ul>
+            <li @click="menuEvent('newtask')">Add task</li>
+            <li @click="deleteTask"  :class="{warn: deleteWarned}" >{{deleteText}}</li>
+            <li @click="menuEvent('edit')">Edit</li>
+            <template v-if="hasChildren">
+                <li @click="menuEvent('expandall')">Expand all</li>
+                <li @click="menuEvent('collapseall')">Collapse all</li>
+            </template>
+        </ul>        
+    </div>
 </template>
 
 <script>
@@ -43,53 +43,50 @@ export default {
         setMenuPostion(){
             //set position to that of the cursor
             let x = this.cords.rX, y = this.cords.rY;
-            const el = this.$refs.ul,
+            const el = this.$refs.menuEl,
                   aX = this.cords.aX, aY = this.cords.aY,
                   elH = el.clientHeight, elW = el.clientWidth,
                   wH = window.innerHeight, wW = window.innerWidth,
                   onMobile = ('ontouchstart' in window ) ||( navigator.maxTouchPoints > 0 ) || ( navigator.msMaxTouchPoints > 0 );
 
-            //check overflow
+            //for diagnosting
             const willOverflow = {
                 right: aX + elW > wW,
                 left: aX - elW < 0,
                 up: aY - elH < 0,
                 down: aY + elH > wH
             }
-            
 
+            
+            if(!onMobile){
+                //for desktop. Since default pos = right/down, only 2 cases need be checked.
+                if(aX + elW > wW){x -= elW;} //display menu on left side
+                if(aY + elH > wH) {y -= elH} //display menu on top
+            }
+            else{
             //place the menu above the finger on mobile, a more convenient place.
-            if(onMobile){
-                //position menu above finger and in the middle
-                y -= elH + 10;
-                x -= elW / 2;
+                //default position = centered/up
+                y -= elH + 10; //display menu on top of finger/task
+                x -= elW / 2;  // display menu centered relative to finger
+
                 //flip the order of the menu so that the more likely to be used items are nearer.
                 el.style.display = "flex";
                 el.style.flexDirection = "column-reverse"
-            }
-            onMobile;
-            //reposition if overflowing
-            if(willOverflow.left){
-                // x += elW;
-            } 
-            else if (willOverflow.right){
-                x -= elW;
-            }
-            // not an elseif cause it can overflow in two axis (e.g: left and bottom)
-            if(willOverflow.top){
-                // y += elH;
-            }
-            else if(willOverflow.down){
-                y -= elH;
-            }
 
+                //correct if willOverflow
+                if(aX - elW/2 < 0){x+= elH/4} else if(aX + elW/2 > wW){x-= elH/4}
+                //  ^ willOverflowLeft                 ^ willOverflowRight
+                //move by a 1/4 width cause it's already moved 1/2
+
+                if(aY - elH < 0){y += elH + 10}
+                // ^ check if it will overflow up. No need to check down cause the menu goes up by default.
+            }
             
             console.log(willOverflow);
             
             //apply position to elment
-            // el.style.left = x + "px";
-            // el.style.top = y + "px";
-            x;y;
+            el.style.left = x + "px";
+            el.style.top = y + "px";
         },
         
     },
@@ -104,28 +101,15 @@ export default {
 </script>
 
 <style scoped>
-    ul{
+    .menu{
         position: absolute;
-        z-index: 2;
         background: var(--bg-primary);
         padding: .2rem;
         display: block;
+        z-index: 3;
     }
 
-    /* ul{
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translateX(-50%)
-    } */
-    /* .shade{
-        background: #00000011;
-        width: 100vw; height: 100vh;
-        position: absolute;
-        top: 0;
-        left: 0;
-    } */
-   
+    
     li{
         list-style: none;
         font-size: 1rem;

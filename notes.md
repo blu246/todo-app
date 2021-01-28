@@ -1,7 +1,5 @@
 ## changes:
-- fixed tasks menu position bug, for good. It was actually caused by the root task elem being positioned "relative" when taskIndLine was shown. When it wasn't, it was position relative to the body.
-- menu will be moved out of normal position so that it doesn't get positioned out of the browser window.
-
+- overflow prevention on mobile
 
 ## dicussion
 - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day?

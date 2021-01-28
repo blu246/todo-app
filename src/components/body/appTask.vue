@@ -14,7 +14,6 @@
                 :cords="menuCords"
                 :hasChildren="hasChildren"
                 @menuevent="menuEvent"
-                id="controls-menu"
             ></app-controls-menu>
 
         
