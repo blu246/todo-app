@@ -90,6 +90,7 @@ export default {
         //this is a fix for the cursor being placed 1 letter in after it's been edited once.
         wasEdited: false,
         showMenu: false,
+        contextMenuPrevClickPos: 0,
         menuCords: {},
 
     }},
@@ -290,21 +291,14 @@ export default {
         // },
 
         showContextMenu(e){
+            const eX = e.clientX, eY = e.clientY;
+
+            //so you can doubleclick same position to get native contextmenu
+            if(this.showMenu && this.contextMenuPrevClickPos == eX*eY){
+                return;
+            }
             e.preventDefault();
-
-            //apparently the code below is uneeded since a second right click on the same spot brings up the native menu anyways. Keeping it here in case this is just a weird anomaly.
-
-            //to allow the actual contextMenu to show if our custom menu is already showing (double click for native menu);
-            // if(this.nativeMenuPrimed){
-            //     console.log(33);
-            //     return; //allow native menu to show
-
-            // } else {
-            //     console.log(22);
-            //     this.nativeMenuPrimed = true;
-            //     this.prevNativeMenuTimer = setTimeout(()=>this.nativeMenuPrimed = false, 200)
-
-            // }
+            this.contextMenuPrevClickPos = eX * eY;
 
 
             //need the delay cause otherwise the bodyclick event will hide the menu cause it registers after the event from here with a little delay, so we delay this so it happens after it;
@@ -318,14 +312,12 @@ export default {
                     this.showMenu = true;
                     
                     const rect = el.getBoundingClientRect();
-                    const x = e.clientX - rect.left; //x position within the element.
-                    const y = e.clientY - rect.top
+                    const x = eX - rect.left; //x position within the element.
+                    const y = eY - rect.top;
 
                     // this.menuCords = {x: e.clientX, y: e.clientY}
-                    this.menuCords = {x: x, y: y}
-
-
-                   
+                    this.menuCords = {rX: x, rY: y, aX: eX, aY: eY }
+                    // rx/y: relative to task. ax/y actual position (relative to window)
                 } else {
                     this.showMenu = false;
                 }

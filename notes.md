@@ -1,5 +1,6 @@
 ## changes:
 - fixed tasks menu position bug, for good. It was actually caused by the root task elem being positioned "relative" when taskIndLine was shown. When it wasn't, it was position relative to the body.
+- menu will be moved out of normal position so that it doesn't get positioned out of the browser window.
 
 
 ## dicussion
