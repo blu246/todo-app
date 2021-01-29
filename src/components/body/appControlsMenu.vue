@@ -49,13 +49,15 @@ export default {
                   wH = window.innerHeight, wW = window.innerWidth,
                   onMobile = ('ontouchstart' in window ) ||( navigator.maxTouchPoints > 0 ) || ( navigator.msMaxTouchPoints > 0 );
 
-            //for diagnosting
-            const willOverflow = {
-                right: aX + elW > wW,
-                left: aX - elW < 0,
-                up: aY - elH < 0,
-                down: aY + elH > wH
-            }
+            //----for diagnosting
+            // const willOverflow = {
+            //     right: aX + elW > wW,
+            //     left: aX - elW < 0,
+            //     up: aY - elH < 0,
+            //     down: aY + elH > wH
+            // }
+            // console.log(willOverflow);
+
 
             
             if(!onMobile){
@@ -82,7 +84,6 @@ export default {
                 // ^ check if it will overflow up. No need to check down cause the menu goes up by default.
             }
             
-            console.log(willOverflow);
             
             //apply position to elment
             el.style.left = x + "px";
