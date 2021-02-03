@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import bus from "../../bus.js"
 export default {
     props: ['cords', 'hasChildren'],
     data(){return{
@@ -46,8 +47,7 @@ export default {
             const el = this.$refs.menuEl,
                   aX = this.cords.aX, aY = this.cords.aY,
                   elH = el.clientHeight, elW = el.clientWidth,
-                  wH = window.innerHeight, wW = window.innerWidth,
-                  onMobile = ('ontouchstart' in window ) ||( navigator.maxTouchPoints > 0 ) || ( navigator.msMaxTouchPoints > 0 );
+                  wH = window.innerHeight, wW = window.innerWidth;
 
             //----for diagnosting
             // const willOverflow = {
@@ -59,8 +59,7 @@ export default {
             // console.log(willOverflow);
 
 
-            
-            if(!onMobile){
+            if(!bus.onMobile){
                 //for desktop. Since default pos = right/down, only 2 cases need be checked.
                 if(aX + elW > wW){x -= elW;} //display menu on left side
                 if(aY + elH > wH) {y -= elH} //display menu on top

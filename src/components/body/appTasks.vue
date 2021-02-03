@@ -57,6 +57,7 @@ export default {
         //     ]
         // },
         tasksList: [],
+        selectedDate: this.todaysDate,
     }},
 
     watch:{
@@ -65,12 +66,21 @@ export default {
             handler(){
                 //to update %done upon new task creation
                 bus.$emit("statuschange");
-                this.storeTasksList();
+                this.storeTasksList(this.selectedDate);
 
 
             }
         },
+
+
     },
+////////////COMPUTED////////
+computed:{
+     todaysDate(){
+            const date = new Date();  
+            return date.getUTCFullYear() + "-" + (date.getUTCMonth()+1) + "-" + date.getUTCDate();
+        },
+},
 
 //////////// METHODS ///////////
     methods:{
@@ -122,18 +132,13 @@ export default {
             return  total/denom;
         },
 
-        todaysDate(){
-            const date = new Date(); 
-            return date.getUTCDate() + "-" + (date.getUTCMonth()+1) + "-" + date.getUTCFullYear();
-
-        },
-        storeTasksList(){
+       
+        storeTasksList(day){
             //storing all the days in a [year].[month].[day] object will make it neater but retreiving the data means retreiving the whole massive object. ==> Why I'm storing each day in its own "day/month/date" localstorage entry.
-             
             const data = JSON.stringify(this.tasksList);
-            window.localStorage.setItem(this.todaysDate, data);
+            window.localStorage.setItem(day, data);
         },
-        retrieveTasksList(day = this.todaysDate){
+        retrieveTasksList(day){
             let data = window.localStorage.getItem(day);
             if(!data){data="[]"}
             this.tasksList = JSON.parse(data);
@@ -166,11 +171,7 @@ export default {
     
     //////////// HOOKS ///////////
     created(){
-
-        //listener for events
-        // bus.$on("newtask", ()=>{this.newTask();});
-        // this.tasksList.push(this.testTask)
-        
+        this.retrieveTasksList(this.todaysDate);
 
         bus.$on("statuschange", ()=>{
             bus.$emit("percchange", this.calcPerc(this.tasksList));
@@ -178,7 +179,15 @@ export default {
 
         bus.$on("dateandstatuscontrols", (type)=>{this.dateAndStatusControls(type)});
 
-        this.retrieveTasksList();
+        bus.$on("selecteddateupdated", (sd)=>{
+            this.selectedDate = (sd.year +"-"+ (sd.month+1) +"-"+ sd.day);
+            this.retrieveTasksList(this.selectedDate);
+            // console.log(dStr);
+            // console.log(window.localStorage.getItem(dStr))
+        })
+
+
+
     },
 
     

@@ -1,8 +1,11 @@
 ## changes:
-- overflow prevention on mobile
+- moved %done to taskbar on mobile
+- created datePicker component
+- added ability to load other days' tasks through date picker
+
 
 ## dicussion
-- should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day?
+<!-- - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day? -->
 
 ## Todo 
 - [ ] ---
