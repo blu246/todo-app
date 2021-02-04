@@ -1,15 +1,13 @@
 ## changes:
-- moved %done to taskbar on mobile
-- created datePicker component
-- added ability to load other days' tasks through date picker
-
+- made the date picker more mobile friendly.
+- fixed the fillers out of range error bug.
 
 ## dicussion
 <!-- - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day? -->
 
 ## Todo 
 - [ ] ---
-- [ ] History -> previous days, or even next days
+- [x] History -> previous days, or even next days
 - [ ] make tasks delete on swipe on mobile
 - [ ] add ham menu for mobile (left of logo).
 - [x] make menu/add functionalities happen through a right click menu,

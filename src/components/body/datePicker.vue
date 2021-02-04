@@ -1,12 +1,13 @@
 <template>
-    <div id="date-picker-body">
+  <div class="root">
+        <div class="veil"></div>
+        <div id="date-picker-body">
             <div 
-                tabindex="-1" 
                 name="month" 
                 id="month-year-picker-container" 
             >
-                <i class="fas fa-caret-left" @click="monthYearArrowFunc('dec')"> </i>
-                <div id="year-month-text" @click="showMonthGrid=!showMonthGrid">
+                <i class="fas fa-caret-left" @click.stop="monthYearArrowFunc('dec')"> </i>
+                <div id="year-month-text" @click.stop="showMonthGrid=!showMonthGrid">
                     <span 
                         v-if="!showMonthGrid"
                     >
@@ -14,7 +15,7 @@
                     </span>
                     {{selectedDate.year}}
                 </div>
-                <i class="fas fa-caret-right" @click="monthYearArrowFunc('inc')"> </i>
+                <i class="fas fa-caret-right" @click.stop="monthYearArrowFunc('inc')"> </i>
 
             </div>
 
@@ -44,7 +45,10 @@
                             :key="day"
                             :class="{
                                         'is-empty': isDayEmpty(day),
-                                        'is-today': day == todaysDate.day,
+                                        'is-today': day == todaysDate.day
+                                                    && todaysDate.month == selectedDate.month
+                                                    && todaysDate.year == selectedDate.year,
+
                                         'is-selected': day == passedDate.day 
                                                     && selectedDate.month == passedDate.month
                                                     && selectedDate.year == passedDate.year,
@@ -70,7 +74,7 @@
                     <div 
                         v-for="(month, index) in months"
                         :key="month"
-                        @click="selectedDate.month=index; showMonthGrid=false"
+                        @click.stop="selectedDate.month=index; showMonthGrid=false"
                         class="month"
                         :class="{'is-selected': index == selectedDate.month}"
                     >
@@ -79,6 +83,7 @@
                 </div>
             </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -105,8 +110,9 @@ export default {
             const sd = this.selectedDate;
             //return the weekday of day 1 of a month (e.g: 1st february = tuesday); I know, amazing name :p
             const date = new Date(sd.year, sd.month, 1, 12);
-            return date.getUTCDay() - 1;
-            // (num of pre fillers)
+            const i = date.getUTCDay() - 1;
+            return i == -1 ? 6 : i; 
+            // ^ days are 0-based. Sunday = 0; The calendar is shifted by one day: monday = 0; 0-1 = -1 which causes an array error; if the month starts on sunday, 6 fillers are required. 
 
         },
         numOfPostFillers(){
@@ -137,27 +143,41 @@ export default {
         isDayEmpty(day){
             const d = {...this.selectedDate};
             const dString = d.year +"-"+ (d.month+1) +"-"+ day;
-            return !window.localStorage.getItem(dString); 
+            let list = window.localStorage.getItem(dString);
+            if(list){
+                list = JSON.parse(list);
+                if(list.length){
+                    return false;
+                } else{
+                    return true;
+                }
+            } else {
+                return true;
+            }
         },
+
         monthYearArrowFunc(dir){
             const mod =  dir == "dec" ? -1 : 1;
+            const sd = this.selectedDate;
             //whether to decrement or increment;
 
             if(!this.showMonthGrid){
-                this.selectedDate.month += mod;
-                if(this.selectedDate.month == 12){
-                    this.selectedDate.month = 0;
-                    this.selectedDate.year++;
+                sd.month += mod;
+                if(sd.month == 12){
+                    sd.month = 0;
+                    sd.year++;
                 }
-                else if(this.selectedDate.month == -1){
-                    this.selectedDate.month = 11;
-                    this.selectedDate.year--;
+                else if(sd.month == -1){
+                    sd.month = 11;
+                    sd.year--;
                 }
             } else{
-                this.selectedDate.year = this.selectedDate.year + mod;
-                //+= doesn't work here reference type(?)
+                sd.year = sd.year + mod;
+                //+= doesn't work here cause reference type(?)
             }
         },
+
+
         emitDateSelected(){
             bus.$emit("selecteddateupdated", this.selectedDate)
         }
@@ -168,20 +188,21 @@ export default {
 
 <style scoped>
     #date-picker-body{
-        position: absolute;
+        /* position: fixed; */
         background: var(--bg-primary);
         z-index: 5;
-        border: 1px solid red;
-        top: 0;
+        /* border: 1px solid red; */
+        top: 90%;
         left: 2rem;
         font-size: 1rem;
-    }
+        box-shadow: 2px 2px 5px rgba(43, 43, 43, 0.247), -1px -1px 10px #2222221e;
+        padding: .5rem .2rem;
 
+    }
     #month-year-picker-container{
         display: flex;
         justify-content: space-evenly;
         align-items: center;
-        min-width: 30vw;
         height: 100%;
         margin: 0 3rem;
         white-space: nowrap
@@ -198,22 +219,17 @@ export default {
     #months-grid{
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        grid-gap: 0;
+        text-align: center;
+        grid-gap: 1px;
+        background: #eee;
+        margin: 1rem .5rem 0;
     }
     .month{
-        border-bottom: 1px solid rgb(241, 241, 241);
-        border-left: 1px solid rgb(241, 241, 241);
+        background: white;
+        /* border-bottom: 1px solid rgb(241, 241, 241);
+        border-left: 1px solid rgb(241, 241, 241); */
         padding: .5rem;
         text-align: center;
-    }
-    .month:nth-child(n+10){
-        border-bottom: none;
-    }
-    .month:nth-child(1),
-    .month:nth-child(4),
-    .month:nth-child(7),
-    .month:nth-child(10){
-        border-left: none;
     }
 
     #days-grid{
@@ -225,7 +241,7 @@ export default {
         margin: .3rem;
     }
     .day-label, .day-number{
-        padding: .2rem;
+        padding: .5rem .2rem;
         background: white;
         border: 2px solid transparent;
         color: #222;
@@ -234,11 +250,14 @@ export default {
         cursor: pointer;
         background: #00000001;
     }
+    .day-number{
+        font-weight: 200;   
+    }
 
     .day-label{
         padding-bottom: 0;
         border-bottom: 1px solid #dfdfdf;
-        font-weight: 400;
+        font-weight: 600;
     }
 
     .is-today{
@@ -268,5 +287,28 @@ export default {
     #month-year-picker-container i:hover{
         cursor: pointer;
         color: var(--primary-color);
+    }
+
+    @media only screen and (max-width: 600px){
+        #date-picker-body{
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 85vw;
+            min-height: 65vw;
+            z-index: 7;
+        }
+        .veil{
+            content: "";
+            position: fixed;
+            height: 200vh;
+            width: 200vw;
+            background: #00000040;
+            z-index: 5;
+            top: -20%;
+            left: -20%;
+            
+        }
     }
 </style>

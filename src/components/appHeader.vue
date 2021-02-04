@@ -4,14 +4,14 @@
 
      <div class="container flex spc-btw my-auto">
         <h1> <i class="fas fa-microchip"></i>BrainCache</h1>
-
         <div class="clock flex center-y">
             <div v-if="!(percVal==-1)" id="perc-val">{{percString}}</div>
             <span class="separator">|</span>
             <h2>{{time}}</h2>
         </div>
-
      </div>
+
+      <div v-if="!(percVal==-1)" class="perc-val mobile">{{percString}}</div>
 
  </header>
  
@@ -75,7 +75,7 @@ export default {
         font-size: 1.8rem;
         margin-right: .2rem;
     }
-    #perc-val{
+    .perc-val{
         font-size: 1.4rem;
         font-weight: 200;
         align-self: flex-end;
@@ -84,6 +84,9 @@ export default {
     .separator{
         color: rgb(211, 211, 211);
         font-size: 1.2rem;
+    }
+    .mobile{
+        display: none;
     }
     
 
@@ -109,7 +112,7 @@ export default {
 
         }
         
-        #perc-val{
+        .perc-val.mobile{
             font-weight: 700;
             font-size: 1rem;
             display: flex;
@@ -118,7 +121,7 @@ export default {
 
         }
 
-         #perc-val, #placeholder{
+         .perc-val, #placeholder{
              flex-basis: 24%;
              flex-shrink: 1;
          }

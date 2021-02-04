@@ -1,6 +1,6 @@
 <template>
     <div class="container"> 
-            <h1 @click="showDatePicker=true">
+            <h1 @click.stop="showDatePicker=!showDatePicker" :class="{'not-today': !todaysEqualsSelected}">
                 {{dateString}} 
                 <!-- <h3 v-if="showPerc">({{percString}})</h3> -->
                 <date-picker 
@@ -11,7 +11,6 @@
             </h1>
 
             <date-and-status-controls id="controls"></date-and-status-controls>
-            {{showDatePicker}}
 
     </div>
 </template>
@@ -57,6 +56,9 @@ export default {
 
             return ordinal;
         },
+        leadingZero(number){
+            return number <= 9 ? "0"+number : number;
+        }
         
     },
 
@@ -91,12 +93,18 @@ export default {
 
             if(!this.todaysEqualsSelected){
                 const sd = this.selectedDate;
-                return "Tasks from " + sd.day + this.checkOrdinal(sd.day) +" of "+ monthNames[sd.month]; 
+                if(bus.onMobile){
+                   return "Day " + this.leadingZero(sd.day)+"/"+this.leadingZero(sd.month+1);
+                }else{
+                   return "Tasks from " + sd.day + this.checkOrdinal(sd.day) +" of "+ monthNames[sd.month]; 
+                }
             }
 
             if(bus.onMobile){
                 return month + " " + day+ordinal;
             }
+
+            console.log(bus.onMobile)
             return `${dayName}, ${day+ordinal} of ${month}`;
         },
        
@@ -114,13 +122,17 @@ export default {
         
     },
     created(){
+        const obj = {...this.todaysDate}
+        this.selectedDate = obj;
+        
+        //listeners----------
         bus.$on("percchange", (val)=>{
             this.percVal = val;
         });
         
-        const obj = {...this.todaysDate}
-        this.selectedDate = obj;
         bus.$on("selecteddateupdated", date => this.selectedDate = {...date})
+
+        bus.$on("bodyclicked", ()=>this.showDatePicker=false)
 
     },
     updated(){
@@ -139,6 +151,9 @@ export default {
         font-size: 2rem;
         display: inline-block;
         position: relative;
+    }
+    h1:hover{
+        cursor: pointer;
     }
     
     
@@ -175,6 +190,10 @@ export default {
         h3{
             display: none;
         }
+        /* .not-today{
+            font-size: 1rem;
+            background: rgb(10, 9, 9);
+        } */
     }
 
 
