@@ -5,7 +5,7 @@
   >
     <app-header></app-header>
     <app-body ></app-body>
-
+    {{test}}
 
   </div>
 </template>
@@ -16,6 +16,7 @@ import appBody from "./components/appBody.vue"
 import bus from "./bus.js"
 
 export default {
+  data(){return{test: "<b>hello</b>"}},
   components:{
     appHeader,
     appBody,

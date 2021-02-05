@@ -1,7 +1,7 @@
 <template>
   <div class="root">
         <div class="veil"></div>
-        <div id="date-picker-body">
+        <div id="date-picker-body" @click.stop>
             <div 
                 name="month" 
                 id="month-year-picker-container" 
@@ -35,6 +35,8 @@
                             class="day-number fillers"
                             v-for="i in monthFirstDay"
                             :key="i+Math.random()*100"
+                            @click.stop
+
                         >
                         </div>
 
@@ -64,6 +66,7 @@
                             class="day-number fillers"
                             v-for="i in numOfPostFillers"
                             :key="i+Math.random()*100"
+                            @click.stop
                         >
                             
                         </div>
@@ -188,15 +191,15 @@ export default {
 
 <style scoped>
     #date-picker-body{
-        /* position: fixed; */
+        position: absolute;
         background: var(--bg-primary);
         z-index: 5;
-        /* border: 1px solid red; */
         top: 90%;
         left: 2rem;
         font-size: 1rem;
         box-shadow: 2px 2px 5px rgba(43, 43, 43, 0.247), -1px -1px 10px #2222221e;
         padding: .5rem .2rem;
+        cursor: initial;
 
     }
     #month-year-picker-container{

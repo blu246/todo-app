@@ -5,8 +5,11 @@
      <div class="container flex spc-btw my-auto">
         <h1> <i class="fas fa-microchip"></i>BrainCache</h1>
         <div class="clock flex center-y">
-            <div v-if="!(percVal==-1)" id="perc-val">{{percString}}</div>
-            <span class="separator">|</span>
+            <div v-if="!(percVal==-1)" id="perc-val">
+                {{percString}}
+                <span class="separator">|</span>
+            </div>
+            
             <h2>{{time}}</h2>
         </div>
      </div>
