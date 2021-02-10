@@ -1,6 +1,6 @@
 ## changes:
-- made the date picker more mobile friendly.
-- fixed the fillers out of range error bug.
+- task search
+  - highlighting matches
 
 ## dicussion
 <!-- - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day? -->

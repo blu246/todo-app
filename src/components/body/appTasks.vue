@@ -5,7 +5,7 @@
                 <app-task 
                     id="task"
                     v-for="(task, index) in tasksList"
-                    :key="index"
+                    :key="task.taskText+index"
                     :task="task" 
                     :depth=0
                     :generateTask="generateTask"
@@ -67,8 +67,6 @@ export default {
                 //to update %done upon new task creation
                 bus.$emit("statuschange");
                 this.storeTasksList(this.selectedDate);
-
-
             }
         },
 
@@ -142,6 +140,7 @@ computed:{
             let data = window.localStorage.getItem(day);
             if(!data){data="[]"}
             this.tasksList = JSON.parse(data);
+
         },
 
         dateAndStatusControls(type){
@@ -166,7 +165,35 @@ computed:{
                     this.expandCollapse(task.subtasks, action);
                 }
             }
-        }
+        },
+        // async taskSearchFunc(input){
+        //     //the function used to search through tasks to find a match for user input, if it wasn't obvious enough
+        //     const list = await JSON.parse(JSON.stringify(this.tasksList));
+            
+        //     let outputList = await (()=>{
+        //         for(const task of list){
+        //             if(task.subtasks.length){
+        //             //reach childless tasks first, and work up from there
+        //                 task.matchFound = this.taskSearchFunc(task.subtasks);
+        //             }
+
+        //             // mark matches
+        //             if(task.taskText.includes(input)){
+        //                 const re = RegExp(input), rep = "<mark>" + input + "</mark>";
+        //                 task.taskText.replace(re, rep);
+        //                 task.matchFound = true;
+        //             }
+
+        //             return 
+
+
+
+        //         }
+        //     })();
+        //     return outputList;
+
+        // }
+
     },
     
     //////////// HOOKS ///////////
@@ -182,9 +209,12 @@ computed:{
         bus.$on("selecteddateupdated", (sd)=>{
             this.selectedDate = (sd.year +"-"+ (sd.month+1) +"-"+ sd.day);
             this.retrieveTasksList(this.selectedDate);
-            // console.log(dStr);
-            // console.log(window.localStorage.getItem(dStr))
-        })
+        });
+
+        //I think we foolishly assumed that this was going to be a small app that didn't require vuex
+
+        bus.$on("tasksearchinput",this.taskSearchFunc)
+
 
 
 

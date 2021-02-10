@@ -104,7 +104,6 @@ export default {
                 return month + " " + day+ordinal;
             }
 
-            console.log(bus.onMobile)
             return `${dayName}, ${day+ordinal} of ${month}`;
         },
        

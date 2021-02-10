@@ -1,20 +1,23 @@
 <template>
- <header class="shadow py-2r bg-primary">
-     <div id="placeholder"></div>
+ <header class="shadow bg-primary">
 
      <div class="container flex spc-btw my-auto">
+        <div class="placeholder"></div>
+
         <h1> <i class="fas fa-microchip"></i>BrainCache</h1>
-        <div class="clock flex center-y">
-            <div v-if="!(percVal==-1)" id="perc-val">
-                {{percString}}
-                <span class="separator">|</span>
+
+        <div  id="perc-clock-container">
+            <div id="perc-container" v-if="!(percVal==-1)">
+                <span id=perc-val>{{percString}}</span>
+                <span class="separator"></span>
             </div>
-            
-            <h2>{{time}}</h2>
+            <h2 id="clock">{{time}}</h2>
         </div>
+        
+
      </div>
 
-      <div v-if="!(percVal==-1)" class="perc-val mobile">{{percString}}</div>
+      <!-- <div v-if="!(percVal==-1)" class="perc-clock-container mobile">{{percString}}</div> -->
 
  </header>
  
@@ -62,6 +65,9 @@ export default {
 </script>
 
 <style scoped>
+    header{
+        padding: 0 .5rem;
+    }
   
     .container{
         align-items: flex-end;
@@ -76,55 +82,52 @@ export default {
     h2{
         font-weight: 400;
         font-size: 1.8rem;
-        margin-right: .2rem;
+        display: inline-block;
     }
-    .perc-val{
+    #perc-container{
+        display: inline-block;
         font-size: 1.4rem;
         font-weight: 200;
-        align-self: flex-end;
-        padding-bottom: .15rem;
     }
+    
     .separator{
-        color: rgb(211, 211, 211);
-        font-size: 1.2rem;
+        display: inline-block;
+        background: rgb(219, 219, 219);
+        width: 1px;
+        height: 1.2rem;
+        margin: 0 .3rem;
+
+
     }
-    .mobile{
+    .placeholder{
         display: none;
     }
     
 
     @media only screen and (max-width: 600px) {
         
-        .clock{
+        #clock{
             display: none;
             /* cause you got a clock on mobile */
         }
         h1{
             font-size: 1.4rem;
         }
-            
-        header{
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding: 0 0.3rem;
-        }
+       
         .container{
             flex-shrink: 0;
             padding-bottom: 0rem;
 
         }
-        
-        .perc-val.mobile{
-            font-weight: 700;
-            font-size: 1rem;
-            display: flex;
-            justify-content: flex-end;
-            padding-right: .07rem;
-
+        .separator{
+            display: none;
+        }
+        #perc-val{
+            font-size: 1.2rem;
+            font-weight: 400;
         }
 
-         .perc-val, #placeholder{
+        .perc-clock-container, #placeholder{
              flex-basis: 24%;
              flex-shrink: 1;
          }

@@ -1,6 +1,7 @@
 <template>
     <div class="body my-auto mx-2r container bg-primary px-1r py-2r shadow">
         <date-and-status id="date-status"></date-and-status>
+        <app-task-search></app-task-search>
         <app-tasks></app-tasks>
 
 
@@ -10,10 +11,12 @@
 <script>
 import dateAndStatus from "./body/dateAndStatus.vue";
 import appTasks from "./body/appTasks.vue";
+import AppTaskSearch from './body/appTaskSearch.vue';
 export default {
     components:{
         dateAndStatus,
-        appTasks
+        appTasks,
+        AppTaskSearch
     },
     data(){return{
         

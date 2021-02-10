@@ -1,5 +1,6 @@
 <template>
    <div class="controls-wrapper">
+        <i class="fas fa-search" @click="emit('search')"></i>
         <i class="fas fa-caret-down" @click="emit('expand')"></i>
         <i class="fas fa-caret-up" @click="emit('collapse')"></i>
         <i class="fas fa-plus" @click="emit('newTask')"> </i>
@@ -35,10 +36,13 @@ export default {
     .fa-caret-down, .fa-caret-up{
         transform: scale(115%);
     }
+    .fa-search{
+        transform: scale(80%);
+    }
 
 @media only screen and (max-width: 500px){
     i{
-        margin-left: 1.8rem ;
+        /* margin-left: 1.4rem ; */
     }
 }
 </style>
