@@ -57,7 +57,7 @@ export default {
         //     ]
         // },
         tasksList: [],
-        selectedDate: this.todaysDate,
+        selectedDate: "",
     }},
 
     watch:{
@@ -198,6 +198,9 @@ computed:{
     
     //////////// HOOKS ///////////
     created(){
+        //assigning the value here instead of in data() solved the selectedDate being set to undefined problem. Dunno why
+        this.selectedDate = this.todaysDate;
+
         this.retrieveTasksList(this.todaysDate);
 
         bus.$on("statuschange", ()=>{
@@ -210,13 +213,7 @@ computed:{
             this.selectedDate = (sd.year +"-"+ (sd.month+1) +"-"+ sd.day);
             this.retrieveTasksList(this.selectedDate);
         });
-
         //I think we foolishly assumed that this was going to be a small app that didn't require vuex
-
-        bus.$on("tasksearchinput",this.taskSearchFunc)
-
-
-
 
     },
 

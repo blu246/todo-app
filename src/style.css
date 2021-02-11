@@ -71,3 +71,7 @@ body{
 .bg-primary-color{
     background: var(--primary-color);
 }
+
+.mark-cont > mark{
+    background: rgb(255, 253, 150);
+}

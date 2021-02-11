@@ -1,5 +1,5 @@
 <template>
-    <div id="task" :class="taskIndLine">
+    <div id="task" :class="taskIndLine" v-show="showTask">
         <div 
             :style="{fontSize: textSize}"
             class="flex spc-btw"
@@ -32,7 +32,12 @@
                     @cut="checkInput"
                     @blur="checkInput($event, true)"
                 >
-                {{task.taskText}}
+                    <span  
+                        class="mark-cont" 
+                        v-if="search_inSearchMode && search_containsMatch" 
+                        v-html="search_modifiedTaskText"
+                    ></span>
+                    <span v-else>{{task.taskText}}</span>
                 </p>
             </div>
             
@@ -58,12 +63,11 @@
                 :parentList="task.subtasks"
                 :expandCollapse="expandCollapse"
                 @deleteTask="task.subtasks.splice(index, 1)"
+                @childcontainsmatch="childMatchEventFunc"
             ></app-task>
             <!-- will clean this ^ mess soon enough -->
             <!-- will you though? -->
         </div>
-        
-
     </div>
 </template>
 
@@ -91,6 +95,12 @@ export default {
         showMenu: false,
         contextMenuPrevClickPos: 0,
         menuCords: {},
+        //vars for while in search mode
+        search_childContainsMatch: false,
+        search_containsMatch: false,
+        search_inSearchMode: false,
+        search_modifiedTaskText: "",
+       
 
     }},
     // ====== computed ========
@@ -129,6 +139,13 @@ export default {
             this.testNextSib();
             return (this.task.expanded && this.task.hasNextSib && this.hasChildren) ? 'task-ind-line' : "";
         },
+        showTask(){
+            // console.log(this.task.taskText, !this.search_inSearchMode || (this.search_inSearchMode && (this.search_containsMatch || this.search_childContainsMatch)))
+            // console.log("SM:",this.search_inSearchMode, "CM:",this.search_containsMatch, "CCM:",this.search_childContainsMatch)
+            //don't wanna retype it if ever needed
+
+            return !this.search_inSearchMode || (this.search_inSearchMode && (this.search_containsMatch || this.search_childContainsMatch))
+        }
 
         
 
@@ -139,6 +156,7 @@ export default {
 
     // ====== METHODS ========
     methods:{
+        log(a){console.log(a)},
         expandTask(){
             if(this.hasChildren && !this.task.editable){
                this.task.expanded = !this.task.expanded
@@ -301,6 +319,8 @@ export default {
 
 
             //need the delay cause otherwise the bodyclick event will hide the menu cause it registers after the event from here with a little delay, so we delay this so it happens after it;
+
+            //stop even propagation to avoid this ^ altogether. will change later
             setTimeout(()=>{
                 const tar = e.target, el = this.$refs.taskContent;
                 //check whether click is on task or one of the children (p or textnode);
@@ -322,7 +342,43 @@ export default {
                 }
             }, 0)
 
-        }
+        },
+        searchTask(input){
+            if(input){
+                this.search_childContainsMatch = false;
+
+                this.search_inSearchMode = true
+                const re = RegExp(input, "gi");
+
+                if(re.test(this.task.taskText)){
+                    const matches = this.task.taskText.match(re);
+
+                    let text = this.$sanitize(this.task.taskText);
+                    for(const val of matches){
+                        text = text.replace(val, "<mark>"+val+"</mark>");
+                    }
+                    this.search_modifiedTaskText = text;
+                    //Do I know that this ^ mess is inefficient and ineloquent? yes. Do I know how to do better RIGHT NOW? Nope. 
+
+                    this.search_containsMatch = true;
+                    this.$emit("childcontainsmatch", true)
+                } else{
+                    this.search_containsMatch = false;
+                    this.search_modifiedTaskText = "";
+                }
+
+            } else{
+                this.search_inSearchMode = false
+                this.search_modifiedTaskText = "";
+
+
+            }
+        },
+        childMatchEventFunc(bool){
+            this.search_childContainsMatch = bool; 
+            this.$emit("childcontainsmatch", bool)
+        },
+        
     },  
         
             
@@ -338,14 +394,18 @@ export default {
         // See whether to render the line below the taskIndicator or not
         this.testNextSib();
 
+        
+    },
+//////////////////created//////////
+    created(){
         //detect body clicks
         bus.$on("bodyclicked", ({e, type})=>{
             this.showMenu = false;
-           
-          e;type;
+            e;type;
+        });
 
-        
-        })
+        //for search fun
+        bus.$on("tasksearchinput", this.searchTask)
     },
 
 /////////////////updated//////////// 
@@ -436,6 +496,7 @@ export default {
         top: 1.6em;
         left: 1.12em;
     }
+   
 
     @media only screen and (max-width: 500px){
         #task{
@@ -448,3 +509,4 @@ export default {
 
 
 </style>
+

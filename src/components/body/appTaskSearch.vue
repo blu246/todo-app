@@ -13,7 +13,7 @@ export default {
     }},
     methods:{
         searchFunc(){
-            bus.$emit("tasksearchinput", this.searchInput)
+            bus.$emit("tasksearchinput", this.searchInput);
         }
     }
 }
