@@ -351,14 +351,7 @@ export default {
                 const re = RegExp(input, "gi");
 
                 if(re.test(this.task.taskText)){
-                    const matches = this.task.taskText.match(re);
-
-                    let text = this.$sanitize(this.task.taskText);
-                    for(const val of matches){
-                        text = text.replace(val, "<mark>"+val+"</mark>");
-                    }
-                    this.search_modifiedTaskText = text;
-                    //Do I know that this ^ mess is inefficient and ineloquent? yes. Do I know how to do better RIGHT NOW? Nope. 
+                    this.search_modifiedTaskText = this.$sanitize(this.task.taskText).replace(re, "<mark>$&</mark>");
 
                     this.search_containsMatch = true;
                     this.$emit("childcontainsmatch", true)
