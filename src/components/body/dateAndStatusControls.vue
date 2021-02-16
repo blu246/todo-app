@@ -41,8 +41,6 @@ export default {
     }
 
 @media only screen and (max-width: 500px){
-    i{
-        /* margin-left: 1.4rem ; */
-    }
+    
 }
 </style>

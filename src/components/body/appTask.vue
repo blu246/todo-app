@@ -52,7 +52,7 @@
         </div>
 
 
-        <div v-if="hasChildren && task.expanded">
+        <div v-show="hasChildren && task.expanded">
             <app-task 
                 v-for="(subtask, index) in task.subtasks" 
                 :key="index" 
@@ -63,7 +63,7 @@
                 :parentList="task.subtasks"
                 :expandCollapse="expandCollapse"
                 @deleteTask="task.subtasks.splice(index, 1)"
-                @childcontainsmatch="childMatchEventFunc"
+                @childcontainsmatch="emitChildContainsMatch"
             ></app-task>
             <!-- will clean this ^ mess soon enough -->
             <!-- will you though? -->
@@ -345,7 +345,11 @@ export default {
         },
         searchTask(input){
             if(input){
+                this.task.expanded = true;
                 this.search_childContainsMatch = false;
+
+                input = input.replace(/[-[\]{}()*+!<=:?.\\^$|#\s,]/g, "\\$&");
+                console.log(input)
 
                 this.search_inSearchMode = true
                 const re = RegExp(input, "gi");
@@ -363,11 +367,13 @@ export default {
             } else{
                 this.search_inSearchMode = false
                 this.search_modifiedTaskText = "";
+                this.task.expanded = false;
+
 
 
             }
         },
-        childMatchEventFunc(bool){
+        emitChildContainsMatch(bool){
             this.search_childContainsMatch = bool; 
             this.$emit("childcontainsmatch", bool)
         },

@@ -1,11 +1,11 @@
 <template>
   <div id="app" 
     @click="reportBodyClicks($event, 'click'); "
-    @contextmenu="reportBodyClicks($event, 'rclick'); checkOverflow()"
+    @contextmenu="reportBodyClicks($event, 'rclick')"
   >
     <app-header></app-header>
     <app-body ></app-body>
-    {{test}}
+    <div class="box" ref=boxEl></div>
 
   </div>
 </template>
@@ -16,7 +16,6 @@ import appBody from "./components/appBody.vue"
 import bus from "./bus.js"
 
 export default {
-  data(){return{test: "<b>hello</b>"}},
   components:{
     appHeader,
     appBody,
@@ -25,8 +24,32 @@ export default {
     reportBodyClicks(e, type){
       bus.$emit('bodyclicked', {e, type});
     },
-    checkOverflow(){
+    keyboardShortcutsFunc(e){
+      // console.log(e)
+      const el = this.$refs.boxEl;
+      let step = 20;
+      if(e.ctrlKey){
+        step = 5
+      }
 
+      switch(e.key){
+        case "ArrowUp":
+          
+            el.style.top = el.offsetTop - step + "px";
+            break;
+        case "ArrowDown":
+          
+            el.style.top = el.offsetTop + step + "px";
+            break;
+        case "ArrowLeft":
+          
+            el.style.left = el.offsetLeft - step + "px";
+            break;
+        case "ArrowRight":
+            el.style.left = el.offsetLeft + step + "px";
+            break;
+
+      }
     }
 
     // -------- keep this here in case this breaks again --------
@@ -46,6 +69,9 @@ export default {
     // }
     //-----------------------------------------------------------
   },
+  created(){
+    window.addEventListener("keydown", this.keyboardShortcutsFunc);
+  }
 
 }
 </script>
@@ -57,4 +83,10 @@ export default {
     background: brown;
     position: fixed;
   } */
+
+  .box{
+    position: fixed;
+    height: 50px; width: 50px;
+    border: 1px solid red;
+  }
 </style>

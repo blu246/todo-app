@@ -73,5 +73,6 @@ body{
 }
 
 .mark-cont > mark{
-    background: rgb(255, 253, 150);
+    background: rgb(255, 254, 172);
+    border-radius: 5px;
 }
