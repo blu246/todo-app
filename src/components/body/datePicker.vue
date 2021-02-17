@@ -1,7 +1,7 @@
 <template>
-  <div class="root">
+  <div class="root ">
         <div class="veil"></div>
-        <div id="date-picker-body" @click.stop>
+        <div id="date-picker-body" class="br-rnd" @click.stop>
             <div 
                 name="month" 
                 id="month-year-picker-container" 

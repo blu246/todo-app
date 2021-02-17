@@ -1,6 +1,7 @@
 <template>
     <div class="menu shadow" ref="menuEl">
-        <ul>
+        <div id="veil"></div>
+        <ul id="menu-ul" class="br-rnd">
             <li @click="menuEvent('newtask')">Add task</li>
             <li @click="deleteTask"  :class="{warn: deleteWarned}" >{{deleteText}}</li>
             <li @click="menuEvent('edit')">Edit</li>
@@ -9,6 +10,7 @@
                 <li @click="menuEvent('collapseall')">Collapse all</li>
             </template>
         </ul>        
+
     </div>
 </template>
 
@@ -59,29 +61,29 @@ export default {
             // console.log(willOverflow);
 
 
-            if(!bus.onMobile){
+            // if(!bus.onMobile){
                 //for desktop. Since default pos = right/down, only 2 cases need be checked.
                 if(aX + elW > wW){x -= elW;} //display menu on left side
                 if(aY + elH > wH) {y -= elH} //display menu on top
-            }
-            else{
-            //place the menu above the finger on mobile, a more convenient place.
-                //default position = centered/up
-                y -= elH + 10; //display menu on top of finger/task
-                x -= elW / 2;  // display menu centered relative to finger
+            // }
+            // else{
+            // //place the menu above the finger on mobile, a more convenient place.
+            //     //default position = centered/up
+            //     y -= elH + 10; //display menu on top of finger/task
+            //     x -= elW / 2;  // display menu centered relative to finger
 
-                //flip the order of the menu so that the more likely to be used items are nearer.
-                el.style.display = "flex";
-                el.style.flexDirection = "column-reverse"
+            //     //flip the order of the menu so that the more likely to be used items are nearer.
+            //     el.style.display = "flex";
+            //     el.style.flexDirection = "column-reverse"
 
-                //correct if willOverflow
-                if(aX - elW/2 < 0){x+= elH/4} else if(aX + elW/2 > wW){x-= elH/4}
-                //  ^ willOverflowLeft                 ^ willOverflowRight
-                //move by a 1/4 width cause it's already moved 1/2
+            //     //correct if willOverflow
+            //     if(aX - elW/2 < 0){x+= elH/4} else if(aX + elW/2 > wW){x-= elH/4}
+            //     //  ^ willOverflowLeft                 ^ willOverflowRight
+            //     //move by a 1/4 width cause it's already moved 1/2
 
-                if(aY - elH < 0){y += elH + 10}
-                // ^ check if it will overflow up. No need to check down cause the menu goes up by default.
-            }
+            //     if(aY - elH < 0){y += elH + 10}
+            //     // ^ check if it will overflow up. No need to check down cause the menu goes up by default.
+            // }
             
             
             //apply position to elment
@@ -92,7 +94,9 @@ export default {
     },
 
     mounted(){
-        this.setMenuPostion();
+       if(!bus.onMobile){
+            this.setMenuPostion();
+       }
         
         
 
@@ -121,10 +125,60 @@ export default {
         color: var(--primary-color);
     }
     .warn{
-        background: rgb(255, 62, 49)
+        background: #ff6e41
     }
     .warn:hover{
         color: inherit;
+    }
+    #veil{
+        display: none;
+    }
+
+    @media only screen and (max-width: 500px){
+        #veil{
+            display: block;
+            position: fixed;
+            height: 200vh;
+            width: 200vw;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 5;
+            top: -50vh;
+            left: -50vw;
+        }
+        .menu{
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: transparent;
+            width: 100vw;
+            z-index: 3;
+            opacity: 1;
+            display: grid;
+        }
+        #menu-ul{
+            align-self: center;
+            justify-self: center;
+            z-index: 7;
+            background: #fefefe;
+            /* position: relative; */
+            /* top: 3rem; */
+            /* min-width: 30vw; */
+            text-align: center;
+            padding: .5rem 3rem;
+            box-shadow: 2px 2px 3px #00000040, 1px 1px 2px #00000020;;
+        } 
+        #menu-ul li{
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(92, 53, 53, 0.1);
+            padding: .5rem 0;
+        }
+        #menu-ul li:last-child{
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+       
     }
 
     

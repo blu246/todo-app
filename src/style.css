@@ -76,3 +76,7 @@ body{
     background: rgb(255, 254, 172);
     border-radius: 5px;
 }
+
+.br-rnd{
+    border-radius: 10px;
+}

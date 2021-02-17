@@ -1,5 +1,7 @@
 ## changes:
-- search functionality
+- mobile task menu on swipe
+- mobile task menu redesign
+- rounding
 
 ## dicussion
 <!-- - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day? -->

@@ -223,7 +223,6 @@ computed:{
 </script>
 
 <style scoped>
-
     @media only screen and (max-width: 500px){
     /* To remove the padding on the first task on mobile since space is more limited  */
         #task{

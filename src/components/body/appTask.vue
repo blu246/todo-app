@@ -1,12 +1,17 @@
 <template>
-    <div id="task" :class="taskIndLine" v-show="showTask">
+    <div id="task" 
+        :class="taskIndLine" v-show="showTask" 
+        
+    >
         <div 
             :style="{fontSize: textSize}"
-            class="flex spc-btw"
+            class="flex spc-btw is-selected"
             id="task-flex-container"
-            :class="{'task-highlight': highlightTask}"
-            @contextmenu="showContextMenu"
-            ref="taskContent"
+            :class="{'task-highlight': highlightTask, 'is-selected-other': showMenu}"
+            @contextmenu="rclickFunc"
+            ref="taskContentEl"
+            @touchstart.stop="swipe_func_touchstart"
+            @touchend.stop="swipe_func_touchend"
         >
 
             <app-controls-menu 
@@ -100,6 +105,11 @@ export default {
         search_containsMatch: false,
         search_inSearchMode: false,
         search_modifiedTaskText: "",
+
+        //mobile menu on swipe
+        swipe_beingDragged: false,
+        swipe_initPos: 0,
+        swipe_vars: {max: 150, thr: 0.5}
        
 
     }},
@@ -307,7 +317,7 @@ export default {
         //    }
         // },
 
-        showContextMenu(e){
+        rclickFunc(e){
             const eX = e.clientX, eY = e.clientY;
 
             //so you can doubleclick same position to get native contextmenu
@@ -319,10 +329,9 @@ export default {
 
 
             //need the delay cause otherwise the bodyclick event will hide the menu cause it registers after the event from here with a little delay, so we delay this so it happens after it;
-
             //stop even propagation to avoid this ^ altogether. will change later
             setTimeout(()=>{
-                const tar = e.target, el = this.$refs.taskContent;
+                const tar = e.target, el = this.$refs.taskContentEl;
                 //check whether click is on task or one of the children (p or textnode);
                 if(
                     el == tar || el == tar.parentElement || el == tar.parentElement.parentElement
@@ -343,6 +352,8 @@ export default {
             }, 0)
 
         },
+            
+
         searchTask(input){
             if(input){
                 this.task.expanded = true;
@@ -377,12 +388,65 @@ export default {
             this.search_childContainsMatch = bool; 
             this.$emit("childcontainsmatch", bool)
         },
+
+        
+
+        swipe_func_touchstart(e){
+            if(this.showMenu){
+                return;
+            }
+            this.swipe_initPos = e.changedTouches[0].clientX;
+            this.swipe_beingDragged = true;
+
+            window.addEventListener("touchend", this.swipe_func_touchend);
+            window.addEventListener("touchmove", this.swipe_func_touchmove);
+        },
+
+        swipe_func_touchend(e){
+            if(this.swipe_beingDragged){
+                const {max, thr} = this.swipe_vars;
+                let def = e.changedTouches[0].clientX - this.swipe_initPos;
+
+                this.$refs.taskContentEl.style.transform = "";
+
+                if((Math.abs(def))/max > thr){
+                    if(def>0){
+                        console.log("swiped right", this.task.taskText)
+                        this.showMenu = true;
+                    } else{
+                        console.log("swiped left", this.task.taskText)
+
+                    }
+                }
+                window.removeEventListener("touchend", this.swipe_func_touchend);
+                window.removeEventListener("touchmove", this.swipe_func_touchmove);
+            }
+        },
+        
+        swipe_func_touchmove(e){
+            if(this.swipe_beingDragged){
+                e.preventDefault;
+                const {max} = this.swipe_vars;
+                let def = e.changedTouches[0].clientX - this.swipe_initPos;
+
+                if(def>0){
+                    def = def>max ? max : def;
+                } else{
+                    def = Math.abs(def)>max ? -max : def;
+                }
+
+                this.$refs.taskContentEl.style.transform = `translateX(${def}px)`
+            }
+        }
+            
         
     },  
         
             
 
 //======= MOUNTED =========
+    unmounted(){
+    },
     mounted(){ 
         if(this.task.editable){
             //check input
@@ -392,6 +456,8 @@ export default {
         }
         // See whether to render the line below the taskIndicator or not
         this.testNextSib();
+
+       
 
         
     },
@@ -405,6 +471,8 @@ export default {
 
         //for search fun
         bus.$on("tasksearchinput", this.searchTask)
+
+        
     },
 
 /////////////////updated//////////// 
@@ -429,9 +497,13 @@ export default {
         /* padding-left: 1rem; */
     }
     
-    #task-flex-container:hover{
+    .is-selected-hover:hover{
         background: rgba(28, 39, 71, 0.04);
     }
+    .is-selected-other{
+        background: rgba(28, 39, 71, 0.04);
+    }
+
     #task-flex-container{
         position: relative;
     }
@@ -499,7 +571,7 @@ export default {
 
     @media only screen and (max-width: 500px){
         #task{
-            padding-left: .5rem;
+            padding-left: .7rem;
         }
         .task-ind-line:after{
             left: .6rem;

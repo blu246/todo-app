@@ -1,5 +1,5 @@
 <template>
-    <div class="body my-auto mx-2r container bg-primary px-1r py-2r shadow">
+    <div class="body my-auto mx-2r container bg-primary px-1r py-2r shadow br-rnd">
         <date-and-status id="date-status"></date-and-status>
         <app-task-search v-if="showSearchBar" @close="searchBarFunc('blur');"></app-task-search>
         <app-tasks></app-tasks>
@@ -47,6 +47,7 @@ export default {
 <style scoped>
     .body{
         min-height: 80vh;
+        overflow: hidden;
     }
     #date-status{
         margin-bottom: 1rem;

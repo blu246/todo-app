@@ -1,7 +1,7 @@
 <template>
   <div id="app" 
-    @click="reportBodyClicks($event, 'click'); "
-    @contextmenu="reportBodyClicks($event, 'rclick')"
+    @click="reportBodyEvents($event, 'click'); "
+    @contextmenu="reportBodyEvents($event, 'rclick')"
   >
     <app-header></app-header>
     <app-body ></app-body>
@@ -21,7 +21,7 @@ export default {
     appBody,
   },
   methods:{
-    reportBodyClicks(e, type){
+    reportBodyEvents(e, type){
       bus.$emit('bodyclicked', {e, type});
     },
     keyboardShortcutsFunc(e){
