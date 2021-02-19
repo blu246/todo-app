@@ -14,9 +14,12 @@
                     @deleteTask="tasksList.splice(index, 1)"
                 ></app-task>
             </template>
-
             <no-tasks v-else></no-tasks>
 
+            {{flatList.map(task=>{
+                return task.taskText;
+            })}}
+ 
     </div>
     
 </template>
@@ -58,6 +61,7 @@ export default {
         // },
         tasksList: [],
         selectedDate: "",
+        flatListSelectedIndex: -1,
     }},
 
     watch:{
@@ -74,14 +78,21 @@ export default {
     },
 ////////////COMPUTED////////
 computed:{
-     todaysDate(){
-            const date = new Date();  
-            return date.getUTCFullYear() + "-" + (date.getUTCMonth()+1) + "-" + date.getUTCDate();
-        },
+    todaysDate(){
+        const date = new Date();  
+        return date.getUTCFullYear() + "-" + (date.getUTCMonth()+1) + "-" + date.getUTCDate();
+    },
+    flatList(){
+        return this.flattenList(this.tasksList)
+    }
+    
 },
 
 //////////// METHODS ///////////
     methods:{
+        log(x){
+            console.log(x)
+        },
         generateTask(text=""){
             return {
                 taskText: text,
@@ -90,6 +101,7 @@ computed:{
                 status: "active", // active/done/failed
                 subtasks: [],
                 hasNextSib: false,
+                isSelected: false
             }
 
         },
@@ -139,8 +151,7 @@ computed:{
         retrieveTasksList(day){
             let data = window.localStorage.getItem(day);
             if(!data){data="[]"}
-            this.tasksList = JSON.parse(data);
-
+            this.tasksList  = JSON.parse(data);
         },
 
         dateAndStatusControls(type){
@@ -194,6 +205,18 @@ computed:{
 
         // }
 
+        //flatListArr = [] before calling func bellow
+        flattenList(list){
+            const flatlist = [];
+            list.forEach((task)=>{
+                flatlist.push(task);
+                if(task.expanded && task.subtasks.length){
+                    flatlist.push(...this.flattenList(task.subtasks));
+                }
+            })
+            flatlist.forEach((task, i)=>task.flatindex = i);
+            return flatlist;
+        }
     },
     
     //////////// HOOKS ///////////
@@ -215,6 +238,24 @@ computed:{
         });
         //I think we foolishly assumed that this was going to be a small app that didn't require vuex
 
+        bus.$on("apptasksshortcutevents", (e)=>{
+            switch(e.key){
+                case "ArrowDown":
+                    (()=>{
+                        let i = this.flatListSelectedIndex;
+        
+                        if(i > -1){this.flatList[i].isSelected = false}
+            
+                        i = i < (this.flatList.length-1) ? ++i : 0;
+                        
+                        console.log(i)
+                        this.flatListSelectedIndex = i;
+                        this.flatList[i].isSelected = true;
+                    })();
+
+            }
+        });
+        
     },
 
     

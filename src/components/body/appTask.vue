@@ -5,9 +5,9 @@
     >
         <div 
             :style="{fontSize: textSize}"
-            class="flex spc-btw is-selected"
+            class="flex spc-btw task-selected-hover"
             id="task-flex-container"
-            :class="{'task-highlight': highlightTask, 'is-selected-other': showMenu}"
+            :class="{'task-highlight': highlightTask, 'task-selected-js': taskIsSelected, 'task-selected-keyb': task.isSelected}"
             @contextmenu="rclickFunc"
             ref="taskContentEl"
             @touchstart.stop="swipe_func_touchstart"
@@ -43,7 +43,7 @@
                         v-html="search_modifiedTaskText"
                     ></span>
                     <span v-else>{{task.taskText}}</span>
-                </p>
+                </p> [{{task.flatindex}}  {{task.isSelected}}]
             </div>
             
             <app-task-controls 
@@ -109,7 +109,8 @@ export default {
         //mobile menu on swipe
         swipe_beingDragged: false,
         swipe_initPos: 0,
-        swipe_vars: {max: 150, thr: 0.5}
+        swipe_vars: {max: 150, thr: 0.5},
+        
        
 
     }},
@@ -155,6 +156,9 @@ export default {
             //don't wanna retype it if ever needed
 
             return !this.search_inSearchMode || (this.search_inSearchMode && (this.search_containsMatch || this.search_childContainsMatch))
+        },
+        taskIsSelected(){
+            return this.showMenu || this.swipe_beingDragged;
         }
 
         
@@ -354,7 +358,7 @@ export default {
         },
             
 
-        searchTask(input){
+        searchTaskFunc(input){
             if(input){
                 this.task.expanded = true;
                 this.search_childContainsMatch = false;
@@ -404,6 +408,8 @@ export default {
 
         swipe_func_touchend(e){
             if(this.swipe_beingDragged){
+                this.swipe_beingDragged = false;
+
                 const {max, thr} = this.swipe_vars;
                 let def = e.changedTouches[0].clientX - this.swipe_initPos;
 
@@ -470,7 +476,7 @@ export default {
         });
 
         //for search fun
-        bus.$on("tasksearchinput", this.searchTask)
+        bus.$on("tasksearchinput", this.searchTaskFunc)
 
         
     },
@@ -497,11 +503,14 @@ export default {
         /* padding-left: 1rem; */
     }
     
-    .is-selected-hover:hover{
+
+    .task-selected-hover:hover, .task-selected-js{
         background: rgba(28, 39, 71, 0.04);
     }
-    .is-selected-other{
-        background: rgba(28, 39, 71, 0.04);
+    .task-selected-keyb{
+        border: 1px solid #ffffff;
+        background: #fddab3
+        
     }
 
     #task-flex-container{

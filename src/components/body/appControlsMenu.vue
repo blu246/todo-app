@@ -125,7 +125,8 @@ export default {
         color: var(--primary-color);
     }
     .warn{
-        background: #ff6e41
+        background: #ff4336;
+        color: #fff;
     }
     .warn:hover{
         color: inherit;

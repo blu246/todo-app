@@ -70,7 +70,10 @@ export default {
     //-----------------------------------------------------------
   },
   created(){
-    window.addEventListener("keydown", this.keyboardShortcutsFunc);
+    console.log("app.vue created")
+    window.addEventListener("keydown", (e)=>{
+              bus.$emit("apptasksshortcutevents", e);
+        })
   }
 
 }
