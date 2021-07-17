@@ -20,5 +20,29 @@ const bus = new Vue({
     
 });
 
- export default bus;
 
+// - enable keyb shortcuts             -> ctrl+alt+e
+// - search                            -> shift + f
+// - task nav up/down                  -> up/down key       
+// - cancel/close || deselect tasks    -> esc          
+// - new task || new subtask           -> shift + n           
+// - edit selected                     -> shift + e
+// - delete selected                   -> shift + r      
+// - mark selected done                -> shift + x         
+// - expand / expand selected          -> shift + arrow down
+// - collapse / collapse selected      -> shift + arrow up
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export default bus;

@@ -5,6 +5,7 @@
 
 ## dicussion
 <!-- - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day? -->
+Next time, use vuex. To be fair, I didn't think the app would need it, but next time just use it instead of a bus. 
 
 ## Todo 
 - [ ] ---

@@ -43,7 +43,8 @@
                         v-html="search_modifiedTaskText"
                     ></span>
                     <span v-else>{{task.taskText}}</span>
-                </p> [{{task.flatindex}}  {{task.isSelected}}]
+                </p> 
+                <!-- [{{task.flatindex}}  {{task.isSelected}}] -->
             </div>
             
             <app-task-controls 
@@ -109,7 +110,7 @@ export default {
         //mobile menu on swipe
         swipe_beingDragged: false,
         swipe_initPos: 0,
-        swipe_vars: {max: 150, thr: 0.5},
+        swipe_vars: {max: window.innerWidth/3.5, thr: 0.6},
         
        
 
@@ -338,7 +339,7 @@ export default {
                 const tar = e.target, el = this.$refs.taskContentEl;
                 //check whether click is on task or one of the children (p or textnode);
                 if(
-                    el == tar || el == tar.parentElement || el == tar.parentElement.parentElement
+                    el == tar || el == tar.parentElement || el == tar.parentElement.parentElement || el == tar.parentElement.parentElement.parentElement
                     //is there a better way?
                 ){
                     this.showMenu = true;
@@ -475,7 +476,7 @@ export default {
             e;type;
         });
 
-        //for search fun
+        //for search func
         bus.$on("tasksearchinput", this.searchTaskFunc)
 
         
@@ -500,7 +501,7 @@ export default {
         max-width: 85vw;
         display: flex;
         align-items: flex-start;
-        /* padding-left: 1rem; */
+        padding-left: .5rem;
     }
     
 
@@ -508,13 +509,14 @@ export default {
         background: rgba(28, 39, 71, 0.04);
     }
     .task-selected-keyb{
-        border: 1px solid #ffffff;
-        background: #fddab3
-        
+        background: #fddab3;
     }
+   
+
 
     #task-flex-container{
         position: relative;
+        border-radius: 7px;
     }
 
     /* .task-highlight{
@@ -529,12 +531,13 @@ export default {
 
     }
     .rotate-icon{
-        transform: rotate(45deg) translate(0.2em, .1em);
+        transform: rotate(45deg) translate(0.1em, 0);
     }
     .fa-circle{
         font-size: .35em; /*em so that it's relative to the font size of the parent h2   */
         transform: translate(-5% ,-55%);
     }
+    
     
     p{
         display: inline-block;
@@ -564,17 +567,18 @@ export default {
         text-decoration: line-through;
     }
     .task-ind-line{
-        position: relative;
+        position: relative; 
+        /* border: palevioletred 1px solid ; */
     }
-    .task-ind-line:after{
+    .task-ind-line:before{
         content: "";
         display: block;
-        width: 0.15rem;
+        width: 1px;
         height: calc(100% - 1rem);
         position: absolute;
-        background: #eaeaea;
-        top: 1.6em;
-        left: 1.12em;
+        background: #ddd;
+        top: 1.5em;
+        left: 1.6em;
     }
    
 
@@ -582,8 +586,8 @@ export default {
         #task{
             padding-left: .7rem;
         }
-        .task-ind-line:after{
-            left: .6rem;
+        .task-ind-line:before{
+            left: 1.35em;
     }
     }
 

@@ -54,7 +54,7 @@ export default {
         position: relative ;
         margin-bottom: 1rem;
         max-height: 2.3rem;
-        box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.08), -2px -2px 3px rgba(0, 0, 0, 0.032);
+        box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.07), -2px -2px 1px rgba(0, 0, 0, 0.023);
 
     }
     i{
@@ -70,6 +70,6 @@ export default {
         cursor: pointer;
         color: var(--primary-color);
     }
-
+    
 
 </style>

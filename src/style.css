@@ -58,7 +58,7 @@ body{
 .mx-2r{margin-top: 2rem; margin-bottom: 2rem;}
 
 .shadow{
-    box-shadow: 2px 2px 5px #ddd, -1px -1px 10px #eaeaea;
+    box-shadow: 2px 2px 5px rgba(97, 97, 97, 0.11), -1px -1px 10px #64646415;
 }
 
 .bg-primary{

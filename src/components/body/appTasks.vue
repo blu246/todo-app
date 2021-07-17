@@ -248,7 +248,6 @@ computed:{
             
                         i = i < (this.flatList.length-1) ? ++i : 0;
                         
-                        console.log(i)
                         this.flatListSelectedIndex = i;
                         this.flatList[i].isSelected = true;
                     })();

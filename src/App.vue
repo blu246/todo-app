@@ -20,6 +20,9 @@ export default {
     appHeader,
     appBody,
   },
+  data(){return{
+    keyboardShortcutsOn: false,
+  }},
   methods:{
     reportBodyEvents(e, type){
       bus.$emit('bodyclicked', {e, type});
@@ -50,7 +53,58 @@ export default {
             break;
 
       }
-    }
+    },
+
+    keyboardShortcutsParser(e){
+      console.log(this)
+      let cmnd;
+      // Activate shortcuts shortcut
+      if(e.ctrlKey && e.altKey && e.key == "keyE"){
+          cmnd = "toggleKeyboardShortcuts"
+      }
+      // cmnd with SHIFT modifier
+      if(e.shiftKey){
+          console.log(e.shiftKey, e.code)
+          switch(e.code){
+              case "KeyF":
+                  cmnd = "search";
+                  break;
+              case "KeyN":
+                  cmnd = "new";
+                  break
+              case "KeyE":
+                  cmnd = "edit";
+                  break;
+              case "KeyR":
+                  cmnd = "delete";
+                  break;
+              case "KeyX":
+                  cmnd = "done";
+                  break;
+              case "ArrowDown":
+                  cmnd = "expand";
+                  break;
+              case "ArrowUp":
+                  cmnd = "collapse";
+                  break;
+          }
+      } else{
+          switch(e.code){
+              case "Escape":
+                  cmnd = "cancel";
+                  break;
+              case "ArrowUp":
+                  cmnd = "nextTask"
+                  break;
+              case "ArrowDown":
+                  cmnd = "prevTask";
+                  break;            
+              
+          }
+      }
+    console.log(cmnd)
+  }
+
 
     // -------- keep this here in case this breaks again --------
     // testSquareFunc(e){
@@ -70,12 +124,8 @@ export default {
     //-----------------------------------------------------------
   },
   created(){
-    console.log("app.vue created")
-    window.addEventListener("keydown", (e)=>{
-              bus.$emit("apptasksshortcutevents", e);
-        })
+    window.addEventListener("keydown", keyboardShortcutsParser)
   }
-
 }
 </script>
 

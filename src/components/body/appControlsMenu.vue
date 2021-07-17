@@ -1,5 +1,5 @@
 <template>
-    <div class="menu shadow" ref="menuEl">
+    <div class="menu shadow br-rnd" ref="menuEl">
         <div id="veil"></div>
         <ul id="menu-ul" class="br-rnd">
             <li @click="menuEvent('newtask')">Add task</li>
@@ -112,6 +112,7 @@ export default {
         display: block;
         z-index: 3;
     }
+
 
     
     li{
