@@ -31,6 +31,7 @@ export default {
                     break;
                 case "blur":
                     setTimeout(()=>this.showSearchBar = false, 100);
+                    bus.$emit("tasksearchinput", "");
                 break;
 
             }

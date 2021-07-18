@@ -21,56 +21,27 @@ export default {
     appBody,
   },
   data(){return{
-    keyboardShortcutsOn: false,
+    isKeyboardShortcutsOn: false,
   }},
   methods:{
     reportBodyEvents(e, type){
       bus.$emit('bodyclicked', {e, type});
     },
-    keyboardShortcutsFunc(e){
-      // console.log(e)
-      const el = this.$refs.boxEl;
-      let step = 20;
-      if(e.ctrlKey){
-        step = 5
-      }
-
-      switch(e.key){
-        case "ArrowUp":
-          
-            el.style.top = el.offsetTop - step + "px";
-            break;
-        case "ArrowDown":
-          
-            el.style.top = el.offsetTop + step + "px";
-            break;
-        case "ArrowLeft":
-          
-            el.style.left = el.offsetLeft - step + "px";
-            break;
-        case "ArrowRight":
-            el.style.left = el.offsetLeft + step + "px";
-            break;
-
-      }
-    },
-
     keyboardShortcutsParser(e){
-      console.log(this)
       let cmnd;
       // Activate shortcuts shortcut
-      if(e.ctrlKey && e.altKey && e.key == "keyE"){
-          cmnd = "toggleKeyboardShortcuts"
+      if(e.ctrlKey && e.altKey && e.code == "KeyE"){
+          this.isKeyboardShortcutsOn  = !this.isKeyboardShortcutsOn;
       }
-      // cmnd with SHIFT modifier
-      if(e.shiftKey){
-          console.log(e.shiftKey, e.code)
+      if(this.isKeyboardShortcutsOn){
+        // cmnd with SHIFT modifier
+        if(e.shiftKey){
           switch(e.code){
               case "KeyF":
                   cmnd = "search";
                   break;
               case "KeyN":
-                  cmnd = "new";
+                  cmnd = "newtask";
                   break
               case "KeyE":
                   cmnd = "edit";
@@ -88,7 +59,7 @@ export default {
                   cmnd = "collapse";
                   break;
           }
-      } else{
+        } else{
           switch(e.code){
               case "Escape":
                   cmnd = "cancel";
@@ -102,7 +73,11 @@ export default {
               
           }
       }
-    console.log(cmnd)
+      }
+    if(cmnd){
+      console.log(cmnd)
+      bus.$emit("shortcuts_"+cmnd);
+    }
   }
 
 
@@ -124,7 +99,7 @@ export default {
     //-----------------------------------------------------------
   },
   created(){
-    window.addEventListener("keydown", keyboardShortcutsParser)
+    window.addEventListener("keydown", this.keyboardShortcutsParser)
   }
 }
 </script>

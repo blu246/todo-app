@@ -106,6 +106,7 @@ export default {
         search_containsMatch: false,
         search_inSearchMode: false,
         search_modifiedTaskText: "",
+        search_previousExpandedState: null,
 
         //mobile menu on swipe
         swipe_beingDragged: false,
@@ -361,11 +362,11 @@ export default {
 
         searchTaskFunc(input){
             if(input){
+                if(!this.search_inSearchMode){this.search_previousExpandedState = this.task.expanded}
                 this.task.expanded = true;
                 this.search_childContainsMatch = false;
 
                 input = input.replace(/[-[\]{}()*+!<=:?.\\^$|#\s,]/g, "\\$&");
-                console.log(input)
 
                 this.search_inSearchMode = true
                 const re = RegExp(input, "gi");
@@ -383,9 +384,7 @@ export default {
             } else{
                 this.search_inSearchMode = false
                 this.search_modifiedTaskText = "";
-                this.task.expanded = false;
-
-
+                this.task.expanded = this.search_previousExpandedState;
 
             }
         },
@@ -444,8 +443,19 @@ export default {
 
                 this.$refs.taskContentEl.style.transform = `translateX(${def}px)`
             }
+        },
+
+        //because this code wasn't spaghetti enough... -_-
+        shortcutsTaskFunction(index, cmnd){
+
+            if(this.task.flatindex == index){
+                if(cmnd == "done"){
+                    this.controlsEvent('done')
+                } else {
+                    this.menuEvent(cmnd);
+                }
+            }
         }
-            
         
     },  
         
@@ -459,7 +469,7 @@ export default {
             //check input
             this.checkInput("");
             //focuses on new task created
-            this.focusTask();
+            setTimeout(this.focusTask, 10);
         }
         // See whether to render the line below the taskIndicator or not
         this.testNextSib();
@@ -477,7 +487,9 @@ export default {
         });
 
         //for search func
-        bus.$on("tasksearchinput", this.searchTaskFunc)
+        bus.$on("tasksearchinput", this.searchTaskFunc);
+        
+        bus.$on("shortcuts_taskfunctions", this.shortcutsTaskFunction);
 
         
     },

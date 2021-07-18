@@ -43,6 +43,6 @@ const bus = new Vue({
 
 
 
-
+//it was moronic to believe that the app would remain small enough and not require vuex.
 
 export default bus;

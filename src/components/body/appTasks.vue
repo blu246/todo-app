@@ -214,8 +214,83 @@ computed:{
                     flatlist.push(...this.flattenList(task.subtasks));
                 }
             })
-            flatlist.forEach((task, i)=>task.flatindex = i);
+            flatlist.forEach((task, i)=>{task.flatindex = i; task.isSelected = false});
             return flatlist;
+        },
+        scrollTasks(forwards){
+            let i = this.flatListSelectedIndex;
+
+            if(i > -1){this.flatList[i].isSelected = false}
+
+            
+            if(forwards){
+                i = i < (this.flatList.length-1) ? ++i : 0;
+            } else{
+                i = i > 0 ? --i : (this.flatList.length-1);
+            }
+            console.log(i);
+            this.flatListSelectedIndex = i;
+            this.flatList[i].isSelected = true;
+        },
+        deselectTasks(){
+            if(this.flatListSelectedIndex > -1){
+                this.flatList[this.flatListSelectedIndex].isSelected = false;
+                this.flatListSelectedIndex = -1;
+            }
+
+            //to blur search bar
+            bus.$emit("apptasksearch_xbutton", "blur");
+
+
+        },
+        globalLocalExpandCollapse(expand){
+            const i = this.flatListSelectedIndex;
+            if(this.flatListSelectedIndex > -1){
+                if(this.flatList[i].subtasks.length> 0 ){
+                    if(expand){
+                        this.expandCollapse([this.flatList[i]], true)
+                    } else{
+                        this.expandCollapse([this.flatList[i]], false)
+                    }
+                    this.flatList[i].isSelected = true;
+                }
+            }
+            else{
+                if(expand){
+                    this.expandCollapse(this.tasksList, true)
+                }else{
+                    this.expandCollapse(this.tasksList, false)
+
+                }
+            }
+        },
+        shortcutsTaskFunctions(type){
+            const i = this.flatListSelectedIndex;
+            // switch(type){
+            //     case "newtask":
+            //         if(i> -1){
+            //             bus.$emit("shortcuts_taskfunctions", this.flatListSelectedIndex, "newtask");
+            //         }else{
+            //             this.newTask();
+            //         }
+            //         break;
+                
+            //     case "markdone":
+            //         // code here
+            //         break;
+            //     case "delete":
+
+            // }
+
+            if(i < 0){
+                if(type == "newtask"){
+                    this.newTask();
+                }
+            }else{
+                bus.$emit("shortcuts_taskfunctions", this.flatListSelectedIndex, type);
+            }
+
+
         }
     },
     
@@ -236,24 +311,35 @@ computed:{
             this.selectedDate = (sd.year +"-"+ (sd.month+1) +"-"+ sd.day);
             this.retrieveTasksList(this.selectedDate);
         });
-        //I think we foolishly assumed that this was going to be a small app that didn't require vuex
+        //I think I foolishly assumed that this was going to be a small app that didn't require vuex
 
-        bus.$on("apptasksshortcutevents", (e)=>{
-            switch(e.key){
-                case "ArrowDown":
-                    (()=>{
-                        let i = this.flatListSelectedIndex;
+
+// KEYBOARD SHORTCUTS
+        //select task up/down
+        bus.$on("shortcuts_nextTask", ()=>this.scrollTasks(false));
+        bus.$on("shortcuts_prevTask", ()=>this.scrollTasks(true));
+
+        //cancel cmnd
+        bus.$on("shortcuts_cancel", this.deselectTasks);
+
+        //collapse/expand
+        bus.$on("shortcuts_expand", ()=>this.globalLocalExpandCollapse(true));
+        bus.$on("shortcuts_collapse", ()=>this.globalLocalExpandCollapse(false));
+
+        //other funcs
+        //search
+        bus.$on("shortcuts_search", ()=>bus.$emit("dateandstatuscontrols", "search"))
+
+        //new task
+        bus.$on("shortcuts_newtask", ()=>this.shortcutsTaskFunctions("newtask"))
+        bus.$on("shortcuts_delete", ()=>this.shortcutsTaskFunctions("delete"))
+        bus.$on("shortcuts_edit", ()=>this.shortcutsTaskFunctions("edit"))
+        bus.$on("shortcuts_done", ()=>this.shortcutsTaskFunctions("done"))
+
         
-                        if(i > -1){this.flatList[i].isSelected = false}
-            
-                        i = i < (this.flatList.length-1) ? ++i : 0;
-                        
-                        this.flatListSelectedIndex = i;
-                        this.flatList[i].isSelected = true;
-                    })();
 
-            }
-        });
+
+
         
     },
 

@@ -111,6 +111,7 @@ export default {
         padding: .2rem;
         display: block;
         z-index: 3;
+        border-top-left-radius: 0;
     }
 
 

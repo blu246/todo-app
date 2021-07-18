@@ -1,9 +1,12 @@
 ## changes:
-- mobile task menu on swipe
-- mobile task menu redesign
-- rounding
+- implemented shortcuts 
+- fixed errors scrolling with arrow keys caused (needed a parenthesis in the tunery operator surrounding the subtraction)
+- Fixed search bug (expanded state resetting to all expanded after search)
+- fixed bug where ESC triggered search and triggered ^ above.
+- spaghettified code more (use vueX next time for the love of the flying spaghetti monster).
+  
 
-## dicussion
+## dicsussion
 <!-- - should "failed" state be done away with? Make the "failed" state apply to tasks that are not "done" by the end of the day? -->
 Next time, use vuex. To be fair, I didn't think the app would need it, but next time just use it instead of a bus. 
 

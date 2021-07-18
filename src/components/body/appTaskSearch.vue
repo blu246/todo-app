@@ -22,6 +22,7 @@ export default {
                 this.searchFunc();
             }else{
                 this.$emit("close")
+                this.searchInput = "";
             }
         },
         blurred(){
@@ -30,9 +31,20 @@ export default {
             }
         }
     },
+    created(){
+        bus.$on("apptasksearch_xbutton", this.hideBar)
+    },
     mounted(){
-        this.$refs.inputEl.focus();
+        setTimeout(()=>this.$refs.inputEl.focus(), 10);
+        
+
+        //clear F from search bar when invoking it using shortcut shift + f;
+        setTimeout(()=>this.$refs.inputEl.value = "", 10);
+    },
+    unmount(){
+       this.$refs.inputEl.value = "";
     }
+
 
 }
 </script>
