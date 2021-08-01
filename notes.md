@@ -1,9 +1,6 @@
 ## changes:
-- implemented shortcuts 
-- fixed errors scrolling with arrow keys caused (needed a parenthesis in the tunery operator surrounding the subtraction)
-- Fixed search bug (expanded state resetting to all expanded after search)
-- fixed bug where ESC triggered search and triggered ^ above.
-- spaghettified code more (use vueX next time for the love of the flying spaghetti monster).
+- added parser and info widget to explain it (and other things in the future);
+- animations
   
 
 ## dicsussion
@@ -13,8 +10,8 @@ Next time, use vuex. To be fair, I didn't think the app would need it, but next 
 ## Todo 
 - [ ] ---
 - [x] History -> previous days, or even next days
-- [ ] make tasks delete on swipe on mobile
-- [ ] add ham menu for mobile (left of logo). -> what for?
+- [x] make tasks delete on swipe on mobile
+- [x] add ham menu for mobile (left of logo). -> what for?
 - [x] make menu/add functionalities happen through a right click menu,
 - [ ] parser to convert text into tasks (1. main task ;; 1.1 sub1 ;; 1.2 sub2 ;;);
 - [x] finish the controls menu.

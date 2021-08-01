@@ -59,8 +59,7 @@ export default {
             //     down: aY + elH > wH
             // }
             // console.log(willOverflow);
-
-
+            // console.log({aY, elH, wH});
             // if(!bus.onMobile){
                 //for desktop. Since default pos = right/down, only 2 cases need be checked.
                 if(aX + elW > wW){x -= elW;} //display menu on left side

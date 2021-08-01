@@ -3,8 +3,10 @@
         <date-and-status id="date-status"></date-and-status>
         <app-task-search v-if="showSearchBar" @close="searchBarFunc('blur');"></app-task-search>
         <app-tasks></app-tasks>
+        <parser-input  v-if="showParserInput" @close="showParserInput=false"></parser-input>
+        {{cords}}
         
-
+        <context-menu :cords="{rX: cords.x, rY: cords.y}"></context-menu>
     </div>
 </template>
 
@@ -13,15 +15,20 @@ import dateAndStatus from "./body/dateAndStatus.vue";
 import appTasks from "./body/appTasks.vue";
 import AppTaskSearch from './body/appTaskSearch.vue';
 import bus from "../bus.js"
+import parserInput from "./body/parserInput.vue"
+import contextMenu from "./body/appControlsMenu.vue"
 export default {
     components:{
         dateAndStatus,
         appTasks,
-        AppTaskSearch
+        AppTaskSearch,
+        parserInput,
+        contextMenu
     },
     data(){return{
         showSearchBar: false,
-        test: "22"
+        showParserInput: false,
+        cords: {}
     }},
     methods:{
         searchBarFunc(type){
@@ -30,15 +37,26 @@ export default {
                     this.showSearchBar = !this.showSearchBar;
                     break;
                 case "blur":
-                    setTimeout(()=>this.showSearchBar = false, 100);
-                    bus.$emit("tasksearchinput", "");
-                break;
+                    setTimeout(()=>this.showSearchBar = false, 10);
+                    setTimeout(()=>this.showParserInput = false, 10);
+                    if(this.showSearchBar){bus.$emit("tasksearchinput", "")}
+                    //everytime that damn bus causes us a problem I will make it loud and clear so next time you use Vuex
+
+                    break;
+                case "newparse":
+                    this.showParserInput = !this.showParserInput;
+                    break;
 
             }
-        }
+        },
+        
     },
     created(){
         bus.$on("dateandstatuscontrols", this.searchBarFunc);
+        bus.$on("bodyclicked", ()=>this.showParserInput=false);
+
+        window.addEventListener("click", e=>{this.cords.x=e.pageX; this.cords.y=e.pageY; console.log(this.cords)})
+    
 
     }
 
@@ -48,7 +66,7 @@ export default {
 <style scoped>
     .body{
         min-height: 80vh;
-        overflow: hidden;
+        overflow: visible;
     }
     #date-status{
         margin-bottom: 1rem;
@@ -63,6 +81,8 @@ export default {
             margin-bottom: 1rem;
         }
     }
+
+    
     
 </style>
 

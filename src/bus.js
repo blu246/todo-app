@@ -33,7 +33,21 @@ const bus = new Vue({
 // - collapse / collapse selected      -> shift + arrow up
 
 
+bus.closeWithDelay = function(body, veil, ths){
+    veil.classList.remove("anm-fade-in")
+    body.classList.remove("anm-expand-up");
 
+    setTimeout(
+        ()=>{
+            body.classList.add("anm-expand-up-reverse")
+            veil.classList.add("anm-fade-in-reverse")
+        }
+    , 10)
+
+    setTimeout(
+        ()=>console.log(ths.$emit("close"))
+    ,401);
+}
 
 
 

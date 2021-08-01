@@ -1,11 +1,11 @@
 <template>
     <div class="container"> 
-            <h1 @click.stop="showDatePicker=!showDatePicker" :class="{'not-today': !todaysEqualsSelected}">
+            <h1 @click.stop="showDatePicker=!showDatePicker" :class="{'not-today': !todaysEqualsSelected}" class="btn-hover">
                 {{dateString}} 
                 <!-- <h3 v-if="showPerc">({{percString}})</h3> -->
                 <date-picker 
                     v-if="showDatePicker"
-                    @closedatepicker="showDatePicker = false"
+                    @close="showDatePicker = false"
                     :passedDate="{...selectedDate}"
                 ></date-picker>
             </h1>

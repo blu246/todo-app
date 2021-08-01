@@ -1,7 +1,7 @@
 <template>
   <div class="root ">
-        <div class="veil"></div>
-        <div id="date-picker-body" class="br-rnd" @click.stop>
+        <div class="veil anm-fade-in" ref="veil" @click.stop="closePicker"></div>
+        <div id="date-picker-body" class="br-rnd shadow anm-expand-up" @click.stop ref="pickerBody">
             <div 
                 name="month" 
                 id="month-year-picker-container" 
@@ -22,13 +22,8 @@
             <div class="days-picker-container">
                     <div id="days-grid" v-if="!showMonthGrid">
                         <!-- the labels. Mon, Tue,... -->
-                        <div class="day-label">Mon</div>
-                        <div class="day-label">Tue</div>
-                        <div class="day-label">Wen</div>
-                        <div class="day-label">Thu</div>
-                        <div class="day-label">Fri</div>
-                        <div class="day-label">Sat</div>
-                        <div class="day-label">Sun</div>
+                        <div class="day-label" v-for="day in days" :key="day">{{day}}</div>
+                        
                         
                         <!-- pre-fillers to align date with weekday -->
                         <div 
@@ -55,7 +50,7 @@
                                                     && selectedDate.month == passedDate.month
                                                     && selectedDate.year == passedDate.year,
                                     }"
-                            @click.stop="selectedDate.day = day; $emit('closedatepicker'); emitDateSelected()"
+                            @click.stop="selectedDate.day = day; closePicker; emitDateSelected()"
                         >
                                 
                                 {{day}}
@@ -96,6 +91,7 @@ export default {
 
     data(){return{
         months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        days:["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         showMonthGrid: false,
         selectedDate: {...this.passedDate},
     }},
@@ -179,11 +175,17 @@ export default {
                 //+= doesn't work here cause reference type(?)
             }
         },
+        
 
 
         emitDateSelected(){
             bus.$emit("selecteddateupdated", this.selectedDate)
+        },
+
+        closePicker(){
+            bus.closeWithDelay(this.$refs.pickerBody, this.$refs.veil, this)
         }
+        
     },
     
 }
@@ -191,15 +193,16 @@ export default {
 
 <style scoped>
     #date-picker-body{
-        position: absolute;
+        position: fixed;
         background: var(--bg-primary);
         z-index: 5;
-        top: 90%;
-        left: 2rem;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         font-size: 1rem;
-        box-shadow: 2px 2px 5px rgba(43, 43, 43, 0.247), -1px -1px 10px #2222221e;
-        padding: .5rem .2rem;
+        padding: 1.2rem;
         cursor: initial;
+        color: initial;
 
     }
     #month-year-picker-container{
@@ -207,17 +210,18 @@ export default {
         justify-content: space-evenly;
         align-items: center;
         height: 100%;
-        margin: 0 3rem;
-        white-space: nowrap
+        margin: .2rem 3rem;
+        white-space: nowrap;
     }
     #year-month-text{
         text-align: center;
-        padding: .2rem 0;
+        padding: .8rem 0;
+        font-weight: 500;
         width: 7rem;
     }
     #year-month-text:hover, .month:hover{
         cursor: pointer;
-        background: #00000005;
+        background: #00000009;
     }
     #months-grid{
         display: grid;
@@ -231,7 +235,7 @@ export default {
         background: white;
         /* border-bottom: 1px solid rgb(241, 241, 241);
         border-left: 1px solid rgb(241, 241, 241); */
-        padding: .5rem;
+        padding: 1.5rem;
         text-align: center;
     }
 
@@ -239,12 +243,12 @@ export default {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         text-align: center;
-        grid-gap: 1px;
-        background: #eee;
+        grid-gap: .995px;
+        background: #e6e6e6;
         margin: .3rem;
     }
     .day-label, .day-number{
-        padding: .5rem .2rem;
+        padding: .7rem .5rem;
         background: white;
         border: 2px solid transparent;
         color: #222;
@@ -285,7 +289,7 @@ export default {
     } */
     #month-year-picker-container i{
         font-size: 1.3rem;
-        padding: 0 1rem;
+        padding: .5rem 1rem;
     }
     #month-year-picker-container i:hover{
         cursor: pointer;
@@ -301,17 +305,16 @@ export default {
             min-width: 85vw;
             min-height: 65vw;
             z-index: 7;
+            padding: .5rem .2rem;
         }
-        .veil{
-            content: "";
-            position: fixed;
-            height: 200vh;
-            width: 200vw;
-            background: #00000040;
-            z-index: 5;
-            top: -20%;
-            left: -20%;
-            
+        .day-number, .day-label{
+            padding: .5rem .3rem;
+        }
+        #days-grid{
+            margin: .1rem;
+        }
+        .month{
+            padding: 1rem .3rem;
         }
     }
 </style>

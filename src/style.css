@@ -58,7 +58,7 @@ body{
 .mx-2r{margin-top: 2rem; margin-bottom: 2rem;}
 
 .shadow{
-    box-shadow: 2px 2px 5px rgba(97, 97, 97, 0.11), -1px -1px 10px #64646415;
+    box-shadow: 2px 2px 5px rgba(77, 77, 77, 0.17), -1px -1px 10px #50505019;
 }
 
 .bg-primary{
@@ -79,4 +79,79 @@ body{
 
 .br-rnd{
     border-radius: 10px;
+}
+
+.veil{
+    content: "";
+    height: 120vh; width: 120vw;
+    display: block;
+    background: rgba(66, 66, 66, 0.233);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: fixed;
+    z-index: 3;
+}
+
+.btn-hover:hover{
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+.anm-expand-up{
+    animation: expand-up .4s ease-in-out forwards;
+}
+.anm-expand-up-reverse{
+    animation: expand-up .4s ease-in-out backwards reverse;
+}
+@keyframes expand-up{
+    0%{
+        transform: translate(-50%, 30vh) scale(0);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(-50%, -50%) scale(100%);
+        opacity: 100%;
+    }
+}
+.anm-fade-in{
+    animation: fade-in .4s ease-in-out forwards
+}
+.anm-fade-in-reverse{
+    animation: fade-in-reverse .4s ease-in-out forwards;
+
+}
+@keyframes fade-in {
+    0%{
+        opacity: 0%;
+    }
+    100%{
+        opacity: 100%;
+    }
+    
+}
+/* just reversing the prev animation doesn't wanna work??? */
+@keyframes fade-in-reverse{
+    0%{opacity: 1}
+    100%{opacity: 0}
+}
+
+
+.v-enter-active, .v-leave{
+    transform: scaleY(100%);
+    transform-origin: 0 0;
+    opacity: 1;
+    transition: .4s all ease-in-out;
+    z-index: 0;
+    position: relative;
+
+}
+.v-leave-active, .v-enter{
+    transform: scaleY(0%);
+    transform-origin: 0 0;
+    transition: .4s all ease-in-out;
+    opacity: 0;
+    z-index: 0;
+    position: relative;
+
 }

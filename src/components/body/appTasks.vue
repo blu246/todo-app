@@ -11,15 +11,13 @@
                     :generateTask="generateTask"
                     :parentList="tasksList"
                     :expandCollapse="expandCollapse"
+                    :isCollapseAll="isCollapseAll"
                     @deleteTask="tasksList.splice(index, 1)"
+                    @animationEnd="isCollapseAll = false"
                 ></app-task>
             </template>
             <no-tasks v-else></no-tasks>
 
-            {{flatList.map(task=>{
-                return task.taskText;
-            })}}
- 
     </div>
     
 </template>
@@ -62,6 +60,10 @@ export default {
         tasksList: [],
         selectedDate: "",
         flatListSelectedIndex: -1,
+        isKeyboardShortcutsOn: true,
+        textParser: "",
+        isCollapseAll: undefined
+
     }},
 
     watch:{
@@ -83,7 +85,8 @@ computed:{
         return date.getUTCFullYear() + "-" + (date.getUTCMonth()+1) + "-" + date.getUTCDate();
     },
     flatList(){
-        return this.flattenList(this.tasksList)
+        // console.log(this.flatlist);
+        return this.flattenList(this.tasksList);
     }
     
 },
@@ -93,15 +96,15 @@ computed:{
         log(x){
             console.log(x)
         },
-        generateTask(text=""){
+        generateTask(text="", editable="true", expanded="false"){
             return {
                 taskText: text,
-                expanded: false,
-                editable: true,
+                expanded: expanded,
+                editable: editable,
                 status: "active", // active/done/failed
                 subtasks: [],
                 hasNextSib: false,
-                isSelected: false
+                isSelected: false,
             }
 
         },
@@ -152,6 +155,7 @@ computed:{
             let data = window.localStorage.getItem(day);
             if(!data){data="[]"}
             this.tasksList  = JSON.parse(data);
+            // console.log(this.flatlist)
         },
 
         dateAndStatusControls(type){
@@ -170,12 +174,14 @@ computed:{
 
         expandCollapse(list, action){
             //true-> expand. false -> collapse;
+            this.isCollapseAll = true;
             for(const task of list){
                 task.expanded = action;
                 if(task.subtasks.length){
                     this.expandCollapse(task.subtasks, action);
                 }
             }
+            setTimeout( ()=>this.isCollapseAll = false, 401)
         },
         // async taskSearchFunc(input){
         //     //the function used to search through tasks to find a match for user input, if it wasn't obvious enough
@@ -219,6 +225,7 @@ computed:{
         },
         scrollTasks(forwards){
             let i = this.flatListSelectedIndex;
+            if(this.flatList.length < 1){return;}
 
             if(i > -1){this.flatList[i].isSelected = false}
 
@@ -228,7 +235,7 @@ computed:{
             } else{
                 i = i > 0 ? --i : (this.flatList.length-1);
             }
-            console.log(i);
+            // console.log(i);
             this.flatListSelectedIndex = i;
             this.flatList[i].isSelected = true;
         },
@@ -240,6 +247,7 @@ computed:{
 
             //to blur search bar
             bus.$emit("apptasksearch_xbutton", "blur");
+            bus.$emit("dateandstatuscontrols", "blur")
 
 
         },
@@ -282,20 +290,114 @@ computed:{
 
             // }
 
-            if(i < 0){
-                if(type == "newtask"){
+            if(i < 0 && type == "newtask"){
                     this.newTask();
-                }
             }else{
                 bus.$emit("shortcuts_taskfunctions", this.flatListSelectedIndex, type);
             }
+        },
+        keyboardShortcutsParser(e){
 
+            // List of shortcuts
+            // - enable keyb shortcuts             -> ctrl+alt+e
+            // - search                            -> shift + f
+            // - task nav up/down                  -> up/down key
 
+            // - expand / expand selected          -> shift + arrow down
+            // - collapse / collapse selected      -> shift + arrow up
+            // - cancel/close || deselect tasks    -> esc          
+
+            // - new task || new subtask           -> shift + n           
+            // - edit selected                     -> shift + e
+            // - delete selected                   -> shift + r      
+            // - mark selected done                -> shift + x      
+
+            let cmnd;
+            // Activate shortcuts shortcut
+            if(e.ctrlKey && e.altKey && e.code == "KeyE"){
+                this.isKeyboardShortcutsOn  = !this.isKeyboardShortcutsOn;
+            }
+            if(this.isKeyboardShortcutsOn){
+                // cmnd with SHIFT modifier
+                if(e.shiftKey){
+                    switch(e.code){
+                        case "KeyF":
+                            cmnd = "search";
+                            bus.$emit("dateandstatuscontrols", "search");
+                            break;
+                        case "KeyN":
+                            cmnd = "newtask";
+                            this.shortcutsTaskFunctions("newtask")
+                            break
+                        case "KeyE":
+                            cmnd = "edit";
+                            this.shortcutsTaskFunctions("edit")
+                            break;
+                        case "KeyR":
+                            cmnd = "delete";
+                            this.shortcutsTaskFunctions("delete")
+                            break;
+                        case "KeyX":
+                            cmnd = "done";
+                            this.shortcutsTaskFunctions("done")
+                            break;
+                        case "ArrowDown":
+                            cmnd = "expand";
+                            this.globalLocalExpandCollapse(true)
+                            break;
+                        case "ArrowUp":
+                            cmnd = "collapse";
+                            this.globalLocalExpandCollapse(false)
+                            break;
+                        }
+                } else{
+                switch(e.code){
+                    case "Escape":
+                        cmnd = "cancel";
+                        this.deselectTasks();
+                        break;
+                    case "ArrowUp":
+                        cmnd = "nextTask"
+                        this.scrollTasks(false);
+                        break;
+                    case "ArrowDown":
+                        cmnd = "prevTask";
+                        this.scrollTasks(true);
+                        break;            
+                    
+                }
+            }
         }
+            if(cmnd){
+            console.log(cmnd)
+            //   bus.$emit("shortcuts_"+cmnd);
+            }
+        },
+
+        parsedListtoTasks(treeifiedList){
+            const gentask = this.generateTask;
+            function generateTaskObj(inputList){
+                const list = [];
+                for(const item of inputList){
+                    const task = (gentask(item.head, false, true));
+                    if(item.children.length){
+                        task.subtasks = generateTaskObj(item.children);
+                    }
+                    list.push(task);
+                }
+                return list;
+            }
+
+            const output = generateTaskObj(treeifiedList);
+            this.tasksList.push(...output);
+        },
+        
     },
     
     //////////// HOOKS ///////////
     created(){
+        window.parser = this.parseTextToTask
+
         //assigning the value here instead of in data() solved the selectedDate being set to undefined problem. Dunno why
         this.selectedDate = this.todaysDate;
 
@@ -310,32 +412,35 @@ computed:{
         bus.$on("selecteddateupdated", (sd)=>{
             this.selectedDate = (sd.year +"-"+ (sd.month+1) +"-"+ sd.day);
             this.retrieveTasksList(this.selectedDate);
+            
         });
         //I think I foolishly assumed that this was going to be a small app that didn't require vuex
+        bus.$on("parserinput_parsed", this.parsedListtoTasks)
 
 
 // KEYBOARD SHORTCUTS
         //select task up/down
-        bus.$on("shortcuts_nextTask", ()=>this.scrollTasks(false));
-        bus.$on("shortcuts_prevTask", ()=>this.scrollTasks(true));
+        // bus.$on("shortcuts_nextTask", ()=>this.scrollTasks(false));
+        // bus.$on("shortcuts_prevTask", ()=>this.scrollTasks(true));
 
         //cancel cmnd
-        bus.$on("shortcuts_cancel", this.deselectTasks);
+        // bus.$on("shortcuts_cancel", this.deselectTasks);
 
         //collapse/expand
-        bus.$on("shortcuts_expand", ()=>this.globalLocalExpandCollapse(true));
-        bus.$on("shortcuts_collapse", ()=>this.globalLocalExpandCollapse(false));
+        // bus.$on("shortcuts_expand", ()=>this.globalLocalExpandCollapse(true));
+        // bus.$on("shortcuts_collapse", ()=>this.globalLocalExpandCollapse(false));
 
         //other funcs
         //search
-        bus.$on("shortcuts_search", ()=>bus.$emit("dateandstatuscontrols", "search"))
+        // bus.$on("shortcuts_search", ()=>bus.$emit("dateandstatuscontrols", "search"))
 
         //new task
-        bus.$on("shortcuts_newtask", ()=>this.shortcutsTaskFunctions("newtask"))
-        bus.$on("shortcuts_delete", ()=>this.shortcutsTaskFunctions("delete"))
-        bus.$on("shortcuts_edit", ()=>this.shortcutsTaskFunctions("edit"))
-        bus.$on("shortcuts_done", ()=>this.shortcutsTaskFunctions("done"))
+        // bus.$on("shortcuts_newtask", ()=>this.shortcutsTaskFunctions("newtask"))
+        // bus.$on("shortcuts_delete", ()=>this.shortcutsTaskFunctions("delete"))
+        // bus.$on("shortcuts_edit", ()=>this.shortcutsTaskFunctions("edit"))
+        // bus.$on("shortcuts_done", ()=>this.shortcutsTaskFunctions("done"))
 
+        window.addEventListener("keydown", this.keyboardShortcutsParser);
         
 
 

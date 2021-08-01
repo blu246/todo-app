@@ -1,6 +1,6 @@
 <template>
-    <div id="task" 
-        :class="taskIndLine" v-show="showTask" 
+    <div id="task" ref="rootContainer"
+        :class="taskIndLine" 
         
     >
         <div 
@@ -30,7 +30,8 @@
 
                 <p 
                     ref="taskP"
-                    :class="{placeholder: showPlaceholder,}"
+                    id="text-p"
+                    :class="{placeholder: showPlaceholder}"
                     :contenteditable="task.editable"
                     @keydown="checkInput"
                     @paste="checkInput"
@@ -56,24 +57,43 @@
 
 
         </div>
+<!-- has to be v-on: cause @ didn't seem to work here -->
+        <!-- <div v-show="hasChildren && task.expanded">
+             -->
+        <div class="test-container">
 
-
-        <div v-show="hasChildren && task.expanded">
-            <app-task 
-                v-for="(subtask, index) in task.subtasks" 
+        <transition 
+            @before-enter="anmBeforeEnter"
+            @enter="anmEnter"
+            @after-enter="anmAfterEnter"
+            @enter-cancelled="anmEnterCancelled"
+            @before-leave="anmBeforeLeave"
+            @leave="anmLeave"
+            @after-leave="anmAfterLeave"
+            @leave-cancelled="anmLeaveCancelled"
+        >
+        <div v-show="hasChildren && task.expanded" class="subtasks-container">
+                <app-task 
                 :key="index" 
+                v-for="(subtask, index) in task.subtasks"
                 :task="subtask"
                 :depth="currentDepth"
                 :generateTask="generateTask"
                 :checkNextSib="checkNextSib"
                 :parentList="task.subtasks"
                 :expandCollapse="expandCollapse"
+                :isCollapseAll="isCollapseAll"
                 @deleteTask="task.subtasks.splice(index, 1)"
                 @childcontainsmatch="emitChildContainsMatch"
             ></app-task>
+        </div>
+        </transition>
+        </div>
+
+        <!-- </div> -->
+
             <!-- will clean this ^ mess soon enough -->
             <!-- will you though? -->
-        </div>
     </div>
 </template>
 
@@ -83,7 +103,7 @@ import appControlsMenu from './appControlsMenu.vue'
 import bus from '../../bus.js';
 
 export default {
-    props: ["task", "depth", "generateTask", "checkNextSib", "parentList", "expandCollapse"],
+    props: ["task", "depth", "generateTask", "checkNextSib", "parentList", "expandCollapse", "isCollapseAll"],
     components:{
         appTask: ()=>import('./appTask.vue'),
         appTaskControls,
@@ -113,6 +133,9 @@ export default {
         swipe_initPos: 0,
         swipe_vars: {max: window.innerWidth/3.5, thr: 0.6},
         
+        // animation
+        inDebounce: false,
+        prevDebounceTimeout: null,
        
 
     }},
@@ -174,8 +197,13 @@ export default {
     methods:{
         log(a){console.log(a)},
         expandTask(){
-            if(this.hasChildren && !this.task.editable){
-               this.task.expanded = !this.task.expanded
+            if(this.hasChildren && !this.task.editable && !this.inDebounce){
+                this.task.expanded = !this.task.expanded
+
+                // this.inDebounce = true; 
+                // console.log(this.prevDebounceTimeout)
+                // window.clearTimeout(this.prevDebounceTimeout)
+                // this.prevDebounceTimeout = setTimeout( ()=>this.inDebounce = false, 405)
             }
         },
 
@@ -350,7 +378,7 @@ export default {
                     const y = eY - rect.top;
 
                     // this.menuCords = {x: e.clientX, y: e.clientY}
-                    this.menuCords = {rX: x, rY: y, aX: eX, aY: eY }
+                    this.menuCords = {rX: x, rY: y, aX: eX, aY: eY}
                     // rx/y: relative to task. ax/y actual position (relative to window)
                 } else {
                     this.showMenu = false;
@@ -455,8 +483,56 @@ export default {
                     this.menuEvent(cmnd);
                 }
             }
-        }
+        },
+        // transitionFuncUp(el){
+        //         // el.style.marginTop = 0 + "px";
+        //         // el.style.marginTop = - el.offsetHeight + "px";
+        //         el.style.height = el.scrollHeight + "px"
+        //         el.style.height = 0 + "px"
+
         
+        
+        anmBeforeEnter(el){
+            el.style.display = "block";
+            el.style.marginTop = - el.scrollHeight + "px";
+            getComputedStyle(el).height;
+            //this ^ prevents enter animation not working first time after reload.
+            el.style.display = "hidden";
+
+            this.$refs.taskContentEl.style.zIndex = 10;
+            el.style.zIndex = 0;
+            this.$refs.rootContainer.style.overflow = "hidden";
+
+        },
+        anmEnter(el){
+            el.style.marginTop = "0px";
+        },
+        anmAfterEnter(){
+            this.$emit("animationEnd");
+            this.$refs.taskContentEl.style.zIndex = "unset";
+            this.$refs.rootContainer.style.overflow = "visible";
+        },
+        anmEnterCancelled(){
+            this.anmAfterEnter()
+        },
+        anmBeforeLeave(){
+            this.$refs.taskContentEl.style.zIndex = 10;
+            this.$refs.rootContainer.style.overflow = "hidden"
+        },
+        anmLeave(el){
+            el.style.marginTop = "0px";
+            el.style.zIndex = 0;
+            if(this.currentDepth != 1 && this.isCollapseAll) return;
+            el.style.marginTop = - el.scrollHeight + "px";
+        },
+        anmAfterLeave(){
+            this.$refs.taskContentEl.style.zIndex = "unset";
+            this.$refs.rootContainer.style.overflow = "visible";
+        },
+        anmLeaveCancelled(){
+            this.anmBeforeLeave();
+        }
+
     },  
         
             
@@ -473,7 +549,7 @@ export default {
         }
         // See whether to render the line below the taskIndicator or not
         this.testNextSib();
-
+        
        
 
         
@@ -505,7 +581,7 @@ export default {
     #task{
         padding-left: 1rem;
         line-height: 2rem;
-        height: fit-content;
+        /* height: fit-content; */
     }
 
     #task-text-wrapper{
@@ -529,6 +605,7 @@ export default {
     #task-flex-container{
         position: relative;
         border-radius: 7px;
+        background-color: #fff;
     }
 
     /* .task-highlight{
@@ -551,7 +628,7 @@ export default {
     }
     
     
-    p{
+    #text-p{
         display: inline-block;
         word-wrap:break-word;
         word-break: break-all;
@@ -567,6 +644,7 @@ export default {
         content: "Type your task here then press enter..";
         width: fit-content;
         color: #a8a8a8;
+        background: rgba(76, 0, 130, 0.185);
 
     }
     .done{
