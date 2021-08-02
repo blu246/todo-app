@@ -1,6 +1,7 @@
 ## changes:
-- added parser and info widget to explain it (and other things in the future);
-- animations
+- fixed animations
+- reworked contextMenu so it is in appBody instead of contained within apps (problems with overflow)
+- added a close on selection checkbox to date picker
   
 
 ## dicsussion

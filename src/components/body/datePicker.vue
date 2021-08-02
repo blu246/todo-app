@@ -2,6 +2,9 @@
   <div class="root ">
         <div class="veil anm-fade-in" ref="veil" @click.stop="closePicker"></div>
         <div id="date-picker-body" class="br-rnd shadow anm-expand-up" @click.stop ref="pickerBody">
+            <div class="close-btn-container">
+                <i class="fas fa-times btn-hover" @click="closePicker"></i>
+            </div>
             <div 
                 name="month" 
                 id="month-year-picker-container" 
@@ -50,7 +53,7 @@
                                                     && selectedDate.month == passedDate.month
                                                     && selectedDate.year == passedDate.year,
                                     }"
-                            @click.stop="selectedDate.day = day; closePicker; emitDateSelected()"
+                            @click.stop="dayPicked(day)"
                         >
                                 
                                 {{day}}
@@ -80,6 +83,15 @@
                     </div>
                 </div>
             </div>
+
+            <div class="preference-container">
+                <div class="faux-checkbox checkbox-checked" @click="closeOnSelectionMethod">
+                    <transition>
+                    <i class="fas fa-check" v-if="closeOnSelection"></i>
+                    </transition>
+                </div>
+                <p>Close on selection</p>
+            </div>
     </div>
   </div>
 </template>
@@ -94,6 +106,7 @@ export default {
         days:["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         showMonthGrid: false,
         selectedDate: {...this.passedDate},
+        closeOnSelection: false
     }},
 
     computed:{
@@ -183,10 +196,25 @@ export default {
         },
 
         closePicker(){
-            bus.closeWithDelay(this.$refs.pickerBody, this.$refs.veil, this)
+                bus.closeWithDelay(this.$refs.pickerBody, this.$refs.veil, this)
+        },
+        closeOnSelectionMethod(){
+            this.closeOnSelection = !this.closeOnSelection;
+            window.localStorage.setItem("closeOnSelectionPreference", this.closeOnSelection);
+        },
+        dayPicked(day){
+            this.selectedDate.day = day;
+            this.emitDateSelected()
+            if(this.closeOnSelection){
+                this.closePicker();
+            }
         }
+
         
     },
+    created(){
+        this.closeOnSelection = JSON.parse(window.localStorage.getItem("closeOnSelectionPreference"));
+    }
     
 }
 </script>
@@ -210,7 +238,7 @@ export default {
         justify-content: space-evenly;
         align-items: center;
         height: 100%;
-        margin: .2rem 3rem;
+        margin: 0 3rem;
         white-space: nowrap;
     }
     #year-month-text{
@@ -289,12 +317,61 @@ export default {
     } */
     #month-year-picker-container i{
         font-size: 1.3rem;
-        padding: .5rem 1rem;
+        padding: 0.5rem 1rem;
     }
     #month-year-picker-container i:hover{
         cursor: pointer;
         color: var(--primary-color);
     }
+
+    .preference-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem 1rem 0;
+    }
+    .faux-checkbox{
+        height: 1.2rem;
+        width: 1.2rem;
+        border: 2px solid #c4c4c4;
+        border-radius: 3px;
+        display: grid;
+        place-content: center;
+        cursor: pointer;
+        margin-right: .3rem;
+    }
+    .faux-checkbox i{
+        color: rgb(47, 172, 255);
+        font-size: 1rem;
+        animation: pop-in .5s ease forwards;
+        transform-origin: 50% 50%;
+    }
+    .preference-container p{
+        font-weight: 500;
+        color: #555;
+        font-size: 1rem;
+    }
+    
+    @keyframes pop-in{
+        0%{
+            transform: scale(0%);
+        }
+        80%{
+            transform: scale(130%);
+        }
+        100%{
+            transform: scale(100%);
+        }
+    }
+    .close-btn-container{
+        display: flex;
+        justify-content: flex-end;
+        color: rgb(126, 126, 126);
+        padding: 0 .2rem;
+    }
+    
+    
+
 
     @media only screen and (max-width: 600px){
         #date-picker-body{

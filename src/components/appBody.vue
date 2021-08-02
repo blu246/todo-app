@@ -4,9 +4,12 @@
         <app-task-search v-if="showSearchBar" @close="searchBarFunc('blur');"></app-task-search>
         <app-tasks></app-tasks>
         <parser-input  v-if="showParserInput" @close="showParserInput=false"></parser-input>
-        {{cords}}
         
-        <context-menu :cords="{rX: cords.x, rY: cords.y}"></context-menu>
+        <context-menu 
+            v-if="contextMenu_showMenu" 
+            :cords="contextMenu_cords" 
+            :hasChildren="contextMenu_hasChildren"
+        ></context-menu>
     </div>
 </template>
 
@@ -28,7 +31,9 @@ export default {
     data(){return{
         showSearchBar: false,
         showParserInput: false,
-        cords: {}
+        contextMenu_cords: {},
+        contextMenu_showMenu: false,
+        contextMenu_hasChildren: null,
     }},
     methods:{
         searchBarFunc(type){
@@ -49,15 +54,21 @@ export default {
 
             }
         },
+        contextMenuMethod(obj){
+            this.contextMenu_cords = {x: obj.x, y: obj.y};
+            this.contextMenu_showMenu = true;
+            this.contextMenu_hasChildren = obj.hasChildren;
+        }
         
     },
     created(){
         bus.$on("dateandstatuscontrols", this.searchBarFunc);
-        bus.$on("bodyclicked", ()=>this.showParserInput=false);
-
-        window.addEventListener("click", e=>{this.cords.x=e.pageX; this.cords.y=e.pageY; console.log(this.cords)})
-    
-
+        bus.$on("bodyclicked", 
+            ()=>{
+                this.showParserInput=false, this.contextMenu_showMenu = false;
+        });
+        
+        bus.$on("appTask_contextMenuEvent", this.contextMenuMethod)
     }
 
 }

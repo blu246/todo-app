@@ -174,7 +174,8 @@ computed:{
 
         expandCollapse(list, action){
             //true-> expand. false -> collapse;
-            this.isCollapseAll = true;
+            bus.appTask_anm_initialDepth = 0;
+            // this.isCollapseAll = true;
             for(const task of list){
                 task.expanded = action;
                 if(task.subtasks.length){

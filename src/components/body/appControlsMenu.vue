@@ -9,15 +9,15 @@
                 <li @click="menuEvent('expandall')">Expand all</li>
                 <li @click="menuEvent('collapseall')">Collapse all</li>
             </template>
-        </ul>        
-
+        </ul>
+        {{text}}
     </div>
 </template>
 
 <script>
 import bus from "../../bus.js"
 export default {
-    props: ['cords', 'hasChildren'],
+    props: ['cords', 'hasChildren', "text"],
     data(){return{
         deleteWarned: false,
 
@@ -27,9 +27,16 @@ export default {
             return this.deleteWarned ? "Sure?" : "Delete";
         }
     },
+    watch:{
+        cords(){
+            this.setMenuPostion();
+        }
+    },
     methods:{
         menuEvent(type){
-            this.$emit("menuevent", type)
+            // this.$emit("menuevent", type)
+            bus.$emit("appControlsMenu_to_appTask__contextMenuEvent", type);
+            
         },
 
         //whether to delete immediately or ask for confirmation.
@@ -39,15 +46,17 @@ export default {
                 e.stopPropagation();
 
             }else{
-                this.$emit("menuevent", "delete");
+                // this.$emit("menuevent", "delete");
+                this.menuEvent("delete")
             }
         },
 
         setMenuPostion(){
             //set position to that of the cursor
-            let x = this.cords.rX, y = this.cords.rY;
+            // let x = this.cords.rX, y = this.cords.rY;
+            let x = this.cords.x, y = this.cords.y;
             const el = this.$refs.menuEl,
-                  aX = this.cords.aX, aY = this.cords.aY,
+                //   aX = this.cords.aX, aY = this.cords.aY,
                   elH = el.clientHeight, elW = el.clientWidth,
                   wH = window.innerHeight, wW = window.innerWidth;
 
@@ -62,8 +71,8 @@ export default {
             // console.log({aY, elH, wH});
             // if(!bus.onMobile){
                 //for desktop. Since default pos = right/down, only 2 cases need be checked.
-                if(aX + elW > wW){x -= elW;} //display menu on left side
-                if(aY + elH > wH) {y -= elH} //display menu on top
+                if(x + elW > wW){x -= elW;} //display menu on left side
+                if(y + elH > wH){y -= elH} //display menu on top
             // }
             // else{
             // //place the menu above the finger on mobile, a more convenient place.
@@ -97,7 +106,6 @@ export default {
             this.setMenuPostion();
        }
         
-        
 
     }
 }
@@ -109,21 +117,20 @@ export default {
         background: var(--bg-primary);
         padding: .2rem;
         display: block;
-        z-index: 3;
+        z-index: 10;
         border-top-left-radius: 0;
     }
-
-
-    
     li{
         list-style: none;
         font-size: 1rem;
-        padding: 0rem .5rem;
-        white-space: nowrap
+        padding: .2rem .5rem;
+        white-space: nowrap;
+        position: relative;
     }
     li:hover{
         cursor: pointer;
         color: var(--primary-color);
+        background: #0000000a;
     }
     .warn{
         background: #ff4336;

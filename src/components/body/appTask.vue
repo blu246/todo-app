@@ -8,18 +8,18 @@
             class="flex spc-btw task-selected-hover"
             id="task-flex-container"
             :class="{'task-highlight': highlightTask, 'task-selected-js': taskIsSelected, 'task-selected-keyb': task.isSelected}"
-            @contextmenu="rclickFunc"
+            @contextmenu.stop="rClickFunc2"
             ref="taskContentEl"
             @touchstart.stop="swipe_func_touchstart"
             @touchend.stop="swipe_func_touchend"
         >
 
-            <app-controls-menu 
+            <!-- <app-controls-menu 
                 v-if="showMenu"
                 :cords="menuCords"
                 :hasChildren="hasChildren"
                 @menuevent="menuEvent"
-            ></app-controls-menu>
+            ></app-controls-menu> -->
 
         
             <div 
@@ -60,7 +60,6 @@
 <!-- has to be v-on: cause @ didn't seem to work here -->
         <!-- <div v-show="hasChildren && task.expanded">
              -->
-        <div class="test-container">
 
         <transition 
             @before-enter="anmBeforeEnter"
@@ -88,7 +87,6 @@
             ></app-task>
         </div>
         </transition>
-        </div>
 
         <!-- </div> -->
 
@@ -99,7 +97,7 @@
 
 <script>
 import appTaskControls from './appTaskControls.vue'
-import appControlsMenu from './appControlsMenu.vue'
+// import appControlsMenu from './appControlsMenu.vue'
 import bus from '../../bus.js';
 
 export default {
@@ -107,7 +105,7 @@ export default {
     components:{
         appTask: ()=>import('./appTask.vue'),
         appTaskControls,
-        AppControlsMenu: appControlsMenu
+        // AppControlsMenu: appControlsMenu
     },
 
     data(){return{
@@ -144,6 +142,7 @@ export default {
         hasChildren(){
             return Boolean(this.task.subtasks.length)
         },
+
 
         textSize(){
             let size;
@@ -184,13 +183,16 @@ export default {
         },
         taskIsSelected(){
             return this.showMenu || this.swipe_beingDragged;
-        }
-
+        },
         
 
     },
     // ====== WATCHED ========
     watch:{
+        // showMenu(){
+        //     bus.$emit("appTask_contextMenuClick");
+        //     this.setOverflowForContextMenu(true);
+        // }
     },
 
     // ====== METHODS ========
@@ -200,10 +202,11 @@ export default {
             if(this.hasChildren && !this.task.editable && !this.inDebounce){
                 this.task.expanded = !this.task.expanded
 
-                // this.inDebounce = true; 
-                // console.log(this.prevDebounceTimeout)
-                // window.clearTimeout(this.prevDebounceTimeout)
-                // this.prevDebounceTimeout = setTimeout( ()=>this.inDebounce = false, 405)
+                this.inDebounce = true; 
+                window.clearTimeout(this.prevDebounceTimeout)
+                this.prevDebounceTimeout = setTimeout( ()=>this.inDebounce = false, 300)
+
+                bus.appTask_anm_initialDepth = -1;
             }
         },
 
@@ -296,6 +299,7 @@ export default {
                 case "collapseall":
                     this.task.expanded = false;
                     this.expandCollapse(this.task.subtasks, false);
+                    bus.appTask_anm_initialDepth = this.depth;
                     break;
             }
         },
@@ -380,13 +384,23 @@ export default {
                     // this.menuCords = {x: e.clientX, y: e.clientY}
                     this.menuCords = {rX: x, rY: y, aX: eX, aY: eY}
                     // rx/y: relative to task. ax/y actual position (relative to window)
+                    bus.$emit("appTask_contextMenuEvent", this.menuCords);
                 } else {
                     this.showMenu = false;
+                    console.log(this.task.taskText, "bodyClick");
+                    bus.$emit("appTask_contextMenuEvent", false)
                 }
             }, 0)
 
         },
-            
+        rClickFunc2(e){
+            bus.$emit("appTask_contextMenuEvent__setShowMenuToFalse");
+            e.preventDefault();
+            const x = e.pageX, y = e.pageY;
+            bus.$emit("appTask_contextMenuEvent", {x, y, text: this.task.taskText, hasChildren: this.hasChildren});
+            this.showMenu = true;
+
+        },
 
         searchTaskFunc(input){
             if(input){
@@ -498,41 +512,49 @@ export default {
             getComputedStyle(el).height;
             //this ^ prevents enter animation not working first time after reload.
             el.style.display = "hidden";
-
-            this.$refs.taskContentEl.style.zIndex = 10;
-            el.style.zIndex = 0;
-            this.$refs.rootContainer.style.overflow = "hidden";
-
         },
         anmEnter(el){
+            this.$refs.taskContentEl.style.zIndex = 5;
+            el.style.zIndex = 0;
             el.style.marginTop = "0px";
         },
-        anmAfterEnter(){
+        anmAfterEnter(el){
+            this.$refs.taskContentEl.style.zIndex = "0";
+            el.style.zIndex = "0";
             this.$emit("animationEnd");
-            this.$refs.taskContentEl.style.zIndex = "unset";
-            this.$refs.rootContainer.style.overflow = "visible";
         },
         anmEnterCancelled(){
             this.anmAfterEnter()
         },
         anmBeforeLeave(){
-            this.$refs.taskContentEl.style.zIndex = 10;
-            this.$refs.rootContainer.style.overflow = "hidden"
         },
         anmLeave(el){
+            const intDepth = bus.appTask_anm_initialDepth;
             el.style.marginTop = "0px";
+            this.$refs.taskContentEl.style.zIndex = 5;
             el.style.zIndex = 0;
-            if(this.currentDepth != 1 && this.isCollapseAll) return;
+
+            if(this.depth != intDepth && intDepth != -1){return;}
             el.style.marginTop = - el.scrollHeight + "px";
         },
         anmAfterLeave(){
-            this.$refs.taskContentEl.style.zIndex = "unset";
-            this.$refs.rootContainer.style.overflow = "visible";
+            bus.appTask_anm_initialDepth = null;
+            this.$refs.taskContentEl.style.zIndex = "0";
         },
         anmLeaveCancelled(){
             this.anmBeforeLeave();
-        }
+        },
 
+        // setOverflowForContextMenu(setToVisible){
+        //     const el = this.$refs.rootContainer;
+        //     if(el){
+        //         if(setToVisible){
+        //             el.style.overflow = "visible";
+        //         }else{
+        //             el.style.overflow = "hidden";
+        //         }
+        //     }
+        // }
     },  
         
             
@@ -549,10 +571,8 @@ export default {
         }
         // See whether to render the line below the taskIndicator or not
         this.testNextSib();
-        
-       
+        this.task.isSelected = false;
 
-        
     },
 //////////////////created//////////
     created(){
@@ -566,7 +586,12 @@ export default {
         bus.$on("tasksearchinput", this.searchTaskFunc);
         
         bus.$on("shortcuts_taskfunctions", this.shortcutsTaskFunction);
-
+        bus.$on("appControlsMenu_to_appTask__contextMenuEvent",(type)=>{
+            if(this.showMenu){
+                this.menuEvent(type);
+            }
+        } )
+        bus.$on("appTask_contextMenuEvent__setShowMenuToFalse", ()=>this.showMenu = false)
         
     },
 
@@ -582,6 +607,8 @@ export default {
         padding-left: 1rem;
         line-height: 2rem;
         /* height: fit-content; */
+        overflow: hidden;
+        z-index: inherit;
     }
 
     #task-text-wrapper{
@@ -590,14 +617,15 @@ export default {
         display: flex;
         align-items: flex-start;
         padding-left: .5rem;
+        z-index: inherit;
     }
     
 
     .task-selected-hover:hover, .task-selected-js{
-        background: rgba(28, 39, 71, 0.04);
+        background: rgb(243, 243, 243) !important;
     }
     .task-selected-keyb{
-        background: #fddab3;
+        background: #fddab3 !important;
     }
    
 
@@ -606,6 +634,10 @@ export default {
         position: relative;
         border-radius: 7px;
         background-color: #fff;
+        z-index: inherit;
+    }
+    .subtasks-container{
+        z-index: inherit;
     }
 
     /* .task-highlight{
