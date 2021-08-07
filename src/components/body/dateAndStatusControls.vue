@@ -1,10 +1,10 @@
 <template>
-   <div class="controls-wrapper">
+   <div class="controls-wrapper" click.stop>
         <div id="newparse-button" @click.stop="emit('newparse')">
             <i class="fas fa-list-ul"></i>
             <i class="fas fa-plus"></i>
         </div>
-        <i class="fas fa-search" @click="emit('search')"></i>
+        <i class="fas fa-search" @click.stop="emit('search')"></i>
         <i class="fas fa-caret-down" @click="emit('expand')"></i>
         <i class="fas fa-caret-up" @click="emit('collapse')"></i>
         <i class="fas fa-plus" @click="emit('newTask')"> </i>
@@ -33,7 +33,7 @@ export default {
         font-size: 1.4rem;
         margin-left: 1.4rem;
     }
-    i:hover, #newparse-button:hover{
+    i:hover, #newparse-button:hover i{
         cursor: pointer;
         color: var(--primary-color);
     }

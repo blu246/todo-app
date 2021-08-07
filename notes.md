@@ -1,7 +1,6 @@
 ## changes:
-- fixed animations
-- reworked contextMenu so it is in appBody instead of contained within apps (problems with overflow)
-- added a close on selection checkbox to date picker
+- dark mode
+- mobile layout fixes
   
 
 ## dicsussion
@@ -14,12 +13,12 @@ Next time, use vuex. To be fair, I didn't think the app would need it, but next 
 - [x] make tasks delete on swipe on mobile
 - [x] add ham menu for mobile (left of logo). -> what for?
 - [x] make menu/add functionalities happen through a right click menu,
-- [ ] parser to convert text into tasks (1. main task ;; 1.1 sub1 ;; 1.2 sub2 ;;);
+- [x] parser to convert text into tasks (1. main task ;; 1.1 sub1 ;; 1.2 sub2 ;;);
 - [x] finish the controls menu.
 - [x] make appTask self contained (no more logic in appTasks). --> doesn't make much sense. the cycle gotta start somewhere
 - [x] redo the nextSib thing.
 <!-- - [ ] expirement with v-once on controls for performance. -->
-- [ ] animations.
+- [x] animations.
 - [x] % counter. Not there for accuracy but to provide some psychological feedback. Assumption is that each task = 1/total %.
 
 ## Features to add

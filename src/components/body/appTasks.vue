@@ -11,9 +11,7 @@
                     :generateTask="generateTask"
                     :parentList="tasksList"
                     :expandCollapse="expandCollapse"
-                    :isCollapseAll="isCollapseAll"
                     @deleteTask="tasksList.splice(index, 1)"
-                    @animationEnd="isCollapseAll = false"
                 ></app-task>
             </template>
             <no-tasks v-else></no-tasks>
@@ -62,7 +60,7 @@ export default {
         flatListSelectedIndex: -1,
         isKeyboardShortcutsOn: true,
         textParser: "",
-        isCollapseAll: undefined
+        // isCollapseAll: undefined
 
     }},
 
@@ -182,7 +180,7 @@ computed:{
                     this.expandCollapse(task.subtasks, action);
                 }
             }
-            setTimeout( ()=>this.isCollapseAll = false, 401)
+            // setTimeout( ()=>this.isCollapseAll = false, 401)
         },
         // async taskSearchFunc(input){
         //     //the function used to search through tasks to find a match for user input, if it wasn't obvious enough

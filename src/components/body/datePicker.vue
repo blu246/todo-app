@@ -86,9 +86,7 @@
 
             <div class="preference-container">
                 <div class="faux-checkbox checkbox-checked" @click="closeOnSelectionMethod">
-                    <transition>
-                    <i class="fas fa-check" v-if="closeOnSelection"></i>
-                    </transition>
+                        <i class="fas fa-check" v-if="closeOnSelection"></i>
                 </div>
                 <p>Close on selection</p>
             </div>
@@ -231,6 +229,7 @@ export default {
         padding: 1.2rem;
         cursor: initial;
         color: initial;
+        border: var(--shadow-subs-border)
 
     }
     #month-year-picker-container{
@@ -249,18 +248,21 @@ export default {
     }
     #year-month-text:hover, .month:hover{
         cursor: pointer;
-        background: #00000009;
+        /* background: #00000009; */
+        background: var(--bg-hover);
     }
     #months-grid{
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         text-align: center;
         grid-gap: 1px;
-        background: #eee;
+        /* background: #eee; */
+        background: var(--separator2);
         margin: 1rem .5rem 0;
+        border: 1px solid var(--separator2);
     }
     .month{
-        background: white;
+        background: var(--bg-primary);
         /* border-bottom: 1px solid rgb(241, 241, 241);
         border-left: 1px solid rgb(241, 241, 241); */
         padding: 1.5rem;
@@ -272,37 +274,48 @@ export default {
         grid-template-columns: repeat(7, 1fr);
         text-align: center;
         grid-gap: .995px;
-        background: #e6e6e6;
+        background: var(--separator2);
         margin: .3rem;
+        border: 1px solid var(--separator2);
     }
     .day-label, .day-number{
         padding: .7rem .5rem;
-        background: white;
+        /* background: white; */
+        background: var(--bg-primary);
         border: 2px solid transparent;
-        color: #222;
+        color: var(--text-color-darker);
+        font-weight: 700;
+    }
+    .day-label{
+        color: var(--text-color-darker);
+        background: var(--bg-darker);
     }
     .day-number:hover{
         cursor: pointer;
-        background: #00000001;
-    }
-    .day-number{
-        font-weight: 200;   
+        /* background: #00000001; */
+        background: var(--bg-hover-dark);
     }
 
-    .day-label{
-        padding-bottom: 0;
-        border-bottom: 1px solid #dfdfdf;
-        font-weight: 600;
+    .day-number.fillers{
+        cursor: default;
+        background: initial;
+        background: var(--bg-primary);
     }
 
-    .is-today{
-        font-weight: 600;
+    .day-number.is-selected{
+        border: 2px solid var(--separator4);
+        color: var(--text-color2);
+        /* background: var(--bg-inv) */
     }
-    .is-selected{
-        border: 2px solid #969696;
+    .day-number.is-today{
+        font-weight: 800;
+        color: var(--primary-color);
     }
     .is-empty{
-        color: rgb(160, 160, 160);
+        /* color: rgb(160, 160, 160); */
+        color: var(--text-color-light);
+        font-weight: 500;
+
         
     }
     /* .is-empty:after{
@@ -328,12 +341,14 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 1rem 1rem 0;
+        padding: 1rem 1rem .2rem;
+        margin-top: 1rem;
+        /* border-top: 2px solid var(--separator2); */
     }
     .faux-checkbox{
         height: 1.2rem;
         width: 1.2rem;
-        border: 2px solid #c4c4c4;
+        border: .15rem solid #c4c4c4;
         border-radius: 3px;
         display: grid;
         place-content: center;
@@ -341,7 +356,7 @@ export default {
         margin-right: .3rem;
     }
     .faux-checkbox i{
-        color: rgb(47, 172, 255);
+        color: var(--primary-color);
         font-size: 1rem;
         animation: pop-in .5s ease forwards;
         transform-origin: 50% 50%;
@@ -363,10 +378,11 @@ export default {
             transform: scale(100%);
         }
     }
+    
     .close-btn-container{
         display: flex;
         justify-content: flex-end;
-        color: rgb(126, 126, 126);
+        color: var(--text-color-light);
         padding: 0 .2rem;
     }
     

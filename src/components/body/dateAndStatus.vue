@@ -165,11 +165,12 @@ export default {
     }
 
     .container{
-        border-bottom: 2px solid #f2f2f2;
+        /* border-bottom: 2px solid #f2f2f2; */
+        border-bottom: 2px solid var(--separator);
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-
+        z-index: 3;
 
     }
     

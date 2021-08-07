@@ -1,8 +1,8 @@
 <template>
-    <div id="search-bar" class="br-rnd">
+    <div id="search-bar" class="br-rnd shadow">
         <input type="text" class="br-rnd" :value="searchInput" @input="searchInput=$event.target.value; searchFunc()" @blur="blurred" ref="inputEl">
         <!-- v-model doesn't play nice with mobile. I believe v-model's @change takes priority over @input, so it doesn't update as you type -->
-        <i class="fas fa-times" @click.stop="hideBar"></i>
+        <i class="fas fa-times btn-hover" @click.stop="hideBar"></i>
     </div>
 </template>
 
@@ -27,7 +27,8 @@ export default {
         },
         blurred(){
             if(!this.searchInput){
-                this.$emit("close")
+                console.log("called?");
+                // this.$emit("close")
             }
         }
     },
@@ -60,13 +61,16 @@ export default {
         font-family: inherit;
         color: inherit;
         outline: none;
+        background: var(--bg-thirdary);
+        border: var(--shadow-subs-border)
     }
     
     #search-bar{
         position: relative ;
         margin-bottom: 1rem;
         max-height: 2.3rem;
-        box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.07), -2px -2px 1px rgba(0, 0, 0, 0.023);
+        box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.17), -1px -1px 1px rgba(0, 0, 0, 0.043);
+
 
     }
     i{
@@ -76,12 +80,12 @@ export default {
         transform: translateY(-50%);
         margin-right: .92rem;
         font-size: 1.2rem;
-        color: #555;
+        color: var(--text-color-dark);
     }
-    i:hover{
+    /* i:hover{
         cursor: pointer;
         color: var(--primary-color);
-    }
+    } */
     
 
 </style>

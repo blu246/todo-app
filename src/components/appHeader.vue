@@ -12,6 +12,14 @@
                 <span class="separator"></span>
             </div>
             <h2 id="clock">{{time}}</h2>
+
+            <span class="separator"></span>
+            <div class="theme-container" @click="themeMethod">
+                <transition mode="out-in" name="v">
+                    <i class="fas fa-sun btn-hover"  v-if="inLightMode" key="sun"></i>
+                    <i class="fas fa-moon btn-hover" v-else key="moon"></i>
+                </transition>
+            </div>
         </div>
         
 
@@ -30,6 +38,7 @@ export default {
             date: "",
             time: "",
             percVal: 0,
+            inLightMode: true,
         }
     },
     computed:{
@@ -37,7 +46,6 @@ export default {
             return (this.percVal * 100).toFixed(0) + "% done";
         }
     },
-
     methods:{
         updateDateTime(){
             const date = new Date();
@@ -46,6 +54,12 @@ export default {
         },
         leadingZero(number){
             return number <= 9 ? "0"+number : number;
+        },
+        themeMethod(){
+            this.inLightMode = !this.inLightMode;
+            document.documentElement.className = this.inLightMode ? "light" : "dark";
+            window.localStorage.setItem("theme_inLightMode", this.inLightMode);
+
         }
     },
     mounted(){
@@ -58,8 +72,16 @@ export default {
     },
     unmounted(){
         clearInterval(this.$options.dateTimeInterval);  
+    },
+    created(){
+        let mode = JSON.parse(window.localStorage.getItem("theme_inLightMode"));
+        if(mode == null){
+            mode = this.inLightMode;
+            window.localStorage.setItem("theme_inLightMode", mode);
+        }
+        this.inLightMode = mode;
+        document.documentElement.className = mode ? "light" : "dark";
     }
-
 }
 
 </script>
@@ -67,6 +89,8 @@ export default {
 <style scoped>
     header{
         padding: 0 .5rem;
+        border: var(--shadow-subs-border);
+        border-left: 0; border-right: 0; border-top: 0;
     }
   
     .container{
@@ -92,7 +116,7 @@ export default {
     
     .separator{
         display: inline-block;
-        background: rgb(219, 219, 219);
+        background: var(--separator2);
         width: 1px;
         height: 1.2rem;
         margin: 0 .3rem;
@@ -102,6 +126,30 @@ export default {
     .placeholder{
         display: none;
     }
+
+    .theme-container{
+        display: inline-block;
+        margin: 0 .5rem;
+    }
+    .theme-container .fas{
+        font-size: 1.6rem;
+    }
+
+
+    .v-leave, .v-enter-active{
+        transition: all .2s ease;
+        transform: rotate(0deg);
+        filter: blur(.5px);
+    }
+    .v-enter, .v-leave-active{
+        transition: all .2s ease;
+        transform: rotate(-180deg);
+        filter: blur(1px);
+    }
+    .v-leave-active{
+        transform: rotate(180deg);
+    }
+
     
 
     @media only screen and (max-width: 600px) {
@@ -132,5 +180,6 @@ export default {
              flex-shrink: 1;
          }
     }
+
 
 </style>

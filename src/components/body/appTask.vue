@@ -1,6 +1,7 @@
 <template>
     <div id="task" ref="rootContainer"
         :class="taskIndLine" 
+        v-show="showTask"
         
     >
         <div 
@@ -459,10 +460,13 @@ export default {
 
                 if((Math.abs(def))/max > thr){
                     if(def>0){
-                        console.log("swiped right", this.task.taskText)
-                        this.showMenu = true;
+                        // console.log("swiped right", this.task.taskText);
+                        const e = {clientX: window.innerWidth/2, clientY: window.innerHeight/2, preventDefault: ()=>{}};
+                        this.rClickFunc2(e);
+                        // this.showMenu = true;
                     } else{
-                        console.log("swiped left", this.task.taskText)
+                        // console.log("swiped left", this.task.taskText)
+                        this.task.status = "done";
 
                     }
                 }
@@ -622,7 +626,8 @@ export default {
     
 
     .task-selected-hover:hover, .task-selected-js{
-        background: rgb(243, 243, 243) !important;
+        /* background: rgb(243, 243, 243) !important; */
+        background: var(--bg-hover) !important;
     }
     .task-selected-keyb{
         background: #fddab3 !important;
@@ -633,7 +638,8 @@ export default {
     #task-flex-container{
         position: relative;
         border-radius: 7px;
-        background-color: #fff;
+        /* background-color: #fff; */
+        background-color: var(--bg-color);
         z-index: inherit;
     }
     .subtasks-container{
@@ -675,8 +681,8 @@ export default {
     .placeholder::before{
         content: "Type your task here then press enter..";
         width: fit-content;
-        color: #a8a8a8;
-        background: rgba(76, 0, 130, 0.185);
+        color: var(--text-color-light);
+        /* background: rgba(76, 0, 130, 0.185); */
 
     }
     .done{
@@ -699,8 +705,27 @@ export default {
         height: calc(100% - 1rem);
         position: absolute;
         background: #ddd;
+        background: var(--separator2);
         top: 1.5em;
         left: 1.6em;
+    }
+    .v-enter-active, .v-leave{
+    transform: scaleY(100%);
+    transform-origin: 0 0;
+    opacity: 1;
+    transition: .3s all ease-in-out;
+    z-index: 0;
+    position: relative;
+
+    }
+    .v-leave-active, .v-enter{
+    transform: scaleY(0%);
+    transform-origin: 0 0;
+    transition: .3s all ease-in-out;
+    opacity: 0;
+    z-index: 0;
+    position: relative;
+    
     }
    
 

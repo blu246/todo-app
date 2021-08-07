@@ -7,11 +7,15 @@
                 </i></h2>
                 
                 <div id="controls">
-                    <i class="fas fa-check btn-hover" @click="parseInput"></i>
+                    <!-- <i class="fas fa-check btn-hover" @click="parseInput"></i> -->
                     <i class="fas fa-times btn-hover" @click="closeParser()"></i>
                 </div>
             </div>
             <textarea ref="textArea" class="br-rnd" id="parser-input" v-model="parserInput"></textarea>
+
+            <div class='parse-btn-container'>
+                <span class="parse-btn btn-hover" @click.stop="parseInput">Parse input</span>
+            </div>
         </div>
 
         <div class="veil anm-fade-in" @click.stop="closeParser" ref="veil"></div>
@@ -19,17 +23,19 @@
         <infowidget v-if="showInfo" @close="showInfo=false">
             <template v-slot:title>Creating tasks the easy way</template>
             <template v-slot:main-section>
-                <p class="spaced">This window allows for the creation of tasks in bulk via text input.</p>
-                <p class="spaced">New lines (enter button) are used as separator between tasks.</p>
-                <p class="spaced">The symbol <strong>&gt;</strong> is used to mark subtasks. Each additional symbol is a level deeper</p>
+                <p class="spaced">- This window allows for the creation of tasks in bulk via text input.</p>
+                <p class="spaced">- New lines (enter button) are used as separator between tasks.</p>
+                <p class="spaced">- The symbol <strong>&gt;</strong> is used to mark subtasks. Each additional symbol is a level deeper.</p>
 
-                <div class="spaced">The following input for example:<br>
-                        <span class="indented"> Example task<br> </span>
-                        <span class="indented"> >example sub task<br> </span>
-                        <span class="indented"> >>example sub sub task<br> </span><br>
-                        <p class="spaced"> Results in the following:</p>
-                        <img src="../../assets/parseexample.png">
-                </div>
+                <p class="spaced">The following input for example:</p>
+                        <div class="input spaced br-rnd">
+                            <p class="indented"> Groceries </p>
+                            <p class="indented"> >Milk </p>
+                            <p class="indented"> >snacks </p>
+                            <p class="indented"> >>chocolate </p>
+                            <p class="indented"> >>chips </p>
+                        </div>
+                <p class=""> Results in the creation of a task (Groceries) with two subtasks (Milk and Snacks), the second of which (Snacks) has two subtasks of its own (Chocolate and Chips).</p>
                 
             </template>
         </infowidget>
@@ -131,15 +137,17 @@ export default {
 
 <style scoped>
     #parser-body{
-        height: 80vh; width: 60vw;
+        min-height: 50vh; width: 60vw;
         max-width: 40rem;
-        background: #fff;
+        background: var(--bg-primary);
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         padding: 1rem 1.3rem;
         z-index: 20;
+        border: var(--shadow-subs-border);
+        /* overflow: auto; */
     }
     
     #title-section{
@@ -155,11 +163,13 @@ export default {
         width: 100%;
         height: 2px;
         background: rgba(243, 243, 243, 0.74);
-        top: 85%;
+        background: var(--separator);
+        top: 90%;
         left: 0%;
     }
     #controls{
         font-size: 1.2rem;
+        transform: translateY(-15%);
     }
     .fa-check{
         margin-right: 1.5rem;
@@ -172,7 +182,7 @@ export default {
     h2{
         font-size: 1.2rem;
         font-weight: 400;
-        color: #555;
+        color: var(--text-color-dark);
         margin-bottom: .5rem;
         position: relative;
     }
@@ -204,14 +214,52 @@ export default {
 
     #parser-input{
         margin-top: 1rem;
-        height: 90%;
+        min-height: 50vh;
         width: 100%;
         resize: none;
         outline: unset;
-        background: #fafafa;
-        border: 1px solid rgb(209, 209, 209);
+        background: var(--bg-fourthary);
+        border: var(--parser-border);
         padding: 1rem;
         font-size: 1rem;
+        /* box-shadow: inset 1px 1px 15px  rgba(0, 0, 0, 0.05); */
+    }
+    .parse-btn-container{
+        display: flex;
+        justify-content:center;
+        margin: 1rem 0 0;
+    }
+    .parse-btn{
+        padding: .2rem 4rem;
+        background: var(--bg-darker);
+        font-weight: 600;
+        color: var(--text-color);
+        border: var(--parser-border);
+        border-radius: 7px;
+    }
+    .indented{
+        padding-left: 1rem;
+    }
+    .spaced{
+        margin-bottom: 1rem;
+    }
+    .input{
+        background: var(--bg-darker);
+        border: var(--separator4);
+        display: inline-block;
+        padding: 1rem 7rem 1rem 0;
+    }
+
+
+    @media only screen and (max-width: 600px){
+        #parser-body{
+            width: 95vw;
+            padding: .7rem;
+        }
+        #title-section h2{
+            font-size: 1rem;
+            font-weight: 700;
+        }
     }
     
     

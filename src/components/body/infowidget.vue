@@ -39,9 +39,9 @@ export default {
 
 <style scoped>
 
-    .v-enter-active, .v-leave-active{
+    /* .v-enter-active, .v-leave-active{
         transition: transform 1s;
-        /* transform: scale(80%); */
+        transform: scale(80%);
         background: red;
         z-index: 20;
     }
@@ -50,19 +50,21 @@ export default {
         z-index: 20;
         background: yellow;
 
-    }
+    } */
 
     #widget-body{
         position: fixed;
-        height: 85vh;
+        min-height: 80vh;
         width: 70vw;
         max-width: 50rem;
-        background: #ffffffe7;
+        background: var(--bg-primary);
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         z-index: 30;
         padding: 1rem 2rem;
+        border: var(--shadow-subs-border)
+
     }
     #title-section{
         display: flex;
@@ -76,8 +78,8 @@ export default {
         position: absolute;
         width: 100%;
         height: 2px;
-        background: rgb(233, 233, 233);
-        top: 110%;
+        background: var(--separator);
+        top: 115%;
         left: 0%;
     }
     #main-section{
@@ -96,14 +98,24 @@ export default {
         z-index: 20;
     }
     .spaced{
-        margin-bottom: .5rem;
+        padding-bottom: .5rem;
     }
     .indented{
-        margin-left: 2rem;
+        padding-left: 2rem;
     }
-    img{
-        display: block;
+    
+
+@media only screen and (max-width: 600px){
+    #widget-body{
+        width: 95vw;
+        max-width: 40rem;
+        padding: .7rem;
     }
+    #title-section h3{
+        font-size: 1rem;
+        font-weight: 700;
+    }
+}
 
     
 </style>

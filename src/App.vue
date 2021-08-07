@@ -5,7 +5,6 @@
   >
     <app-header></app-header>
     <app-body ></app-body>
-    <div class="box" ref=boxEl></div>
 
   </div>
 </template>
@@ -112,9 +111,5 @@ export default {
     position: fixed;
   } */
 
-  .box{
-    position: fixed;
-    height: 50px; width: 50px;
-    border: 1px solid red;
-  }
+
 </style>
