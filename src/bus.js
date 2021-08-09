@@ -43,10 +43,8 @@ bus.closeWithDelay = function(body, veil, ths){
             veil.classList.add("anm-fade-in-reverse")
         }
     , 10)
-
-    setTimeout(
-        ()=>console.log(ths.$emit("close"))
-    ,401);
+    setTimeout( ()=>ths.$emit("close"), 401);
+    ths;
 }
 
 

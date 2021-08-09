@@ -54,9 +54,9 @@ export default {
         showInfo: false,
     }},
     watch:{
-        parserInput(){
-            console.log(JSON.stringify(this.parserInput));
-        }
+        // parserInput(){
+        //     console.log(JSON.stringify(this.parserInput));
+        // }
     },
     methods:{
         parseInput(){
@@ -102,24 +102,25 @@ export default {
         },
         keyboardShortcutsFunc(e){
             e.stopPropagation();
-            if(e.shiftKey && e.code == "Enter"){
+            if(e.shiftKey && e.code == "Enter" && this.$refs.veil){
                 this.parseInput();
             }
         },
         closeParser(){
-            this.$refs.veil.classList.remove("anm-fade-in")
-            this.$refs.parserBody.classList.remove("anm-expand-up");
+            // this.$refs.veil.classList.remove("anm-fade-in")
+            // this.$refs.parserBody.classList.remove("anm-expand-up");
 
-            setTimeout(
-                ()=>{
-                    this.$refs.parserBody.classList.add("anm-expand-up-reverse")
-                    this.$refs.veil.classList.add("anm-fade-in-reverse")
-                }
-            , 10)
+            // setTimeout(
+            //     ()=>{
+            //         this.$refs.parserBody.classList.add("anm-expand-up-reverse")
+            //         this.$refs.veil.classList.add("anm-fade-in-reverse")
+            //     }
+            // , 10)
 
-            setTimeout(
-                ()=>console.log(this.$emit("close"))
-            ,401);
+            // setTimeout(
+            //     ()=>console.log(this.$emit("close"))
+            // ,401);
+            bus.closeWithDelay(this.$refs.parserBody, this.$refs.veil, this);
         },
         
 
@@ -130,6 +131,16 @@ export default {
     created(){
         window.addEventListener("keydown", this.keyboardShortcutsFunc)
         //would it be better to handle keyboard shortcuts locally? 
+
+        bus.$on("appTasks_closeOpenWindow", ()=>{
+            //vue resuses components so check that the component is mounted before closing it
+            if(!this.showInfo && this.$refs.veil){
+                this.closeParser()
+            }
+        });
+    },
+    unmounted(){
+        console.log(33);
     }
 
 }
@@ -214,7 +225,7 @@ export default {
 
     #parser-input{
         margin-top: 1rem;
-        min-height: 50vh;
+        min-height: 70vh;
         width: 100%;
         resize: none;
         outline: unset;
@@ -231,7 +242,7 @@ export default {
     }
     .parse-btn{
         padding: .2rem 4rem;
-        background: var(--bg-darker);
+        background: var(--bg-parse-btn);
         font-weight: 600;
         color: var(--text-color);
         border: var(--parser-border);

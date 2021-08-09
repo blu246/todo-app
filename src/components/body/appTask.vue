@@ -74,7 +74,7 @@
         >
         <div v-show="hasChildren && task.expanded" class="subtasks-container">
                 <app-task 
-                :key="index" 
+                :key="subtask.taskText+index" 
                 v-for="(subtask, index) in task.subtasks"
                 :task="subtask"
                 :depth="currentDepth"
@@ -136,7 +136,6 @@ export default {
         inDebounce: false,
         prevDebounceTimeout: null,
        
-
     }},
     // ====== computed ========
     computed:{
@@ -222,7 +221,9 @@ export default {
             //Yes! I know a child shouldn't mutate its parent's data, but in this recursive application, doing it the "proper" way would result in an unecessary duplication of lines. I already have enough of that, and I hate it.
         },
         checkInput(e, isBlurSave){
-
+            if(e.stopPropagation && this.task.editable){
+                e.stopPropagation();
+            }
             //keeps the function tidy. Basically if element loses focus, treats it as a "Enter" input
             if(isBlurSave){
                 e.key = "Enter"
@@ -232,6 +233,7 @@ export default {
                 const regexp = /^\s+$/g, 
                     text = this.$refs.taskP.innerText,
                     isEmpty = text == "" || regexp.test(text);
+                    console.log(this.task.taskText);
                 
                 if(e.key === "Enter"){
                     this.task.editable = false;
@@ -311,6 +313,9 @@ export default {
         },
 
         focusTask(){
+            if(!this.$refs.taskP){
+                return;
+            }
             setTimeout(
                 ()=>{
                     if(this.task.editable == false){
@@ -329,7 +334,7 @@ export default {
                     sel.removeAllRanges()
                     sel.addRange(range)
                     el.focus()
-                }, 1
+                }, 10
             )
         },
 
@@ -571,15 +576,16 @@ export default {
             //check input
             this.checkInput("");
             //focuses on new task created
-            setTimeout(this.focusTask, 10);
+            setTimeout(this.focusTask, 50);
         }
         // See whether to render the line below the taskIndicator or not
         this.testNextSib();
-        this.task.isSelected = false;
 
     },
 //////////////////created//////////
     created(){
+        // this.task.isSelected = false;
+
         //detect body clicks
         bus.$on("bodyclicked", ({e, type})=>{
             this.showMenu = false;
@@ -627,10 +633,10 @@ export default {
 
     .task-selected-hover:hover, .task-selected-js{
         /* background: rgb(243, 243, 243) !important; */
-        background: var(--bg-hover) !important;
+        background: var(--bg-hover) !important;  
     }
     .task-selected-keyb{
-        background: #fddab3 !important;
+        background: var(--selected-highlight-color) !important;
     }
    
 

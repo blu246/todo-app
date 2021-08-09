@@ -14,24 +14,39 @@
     </div>
 </transition>
 </template>
+
 <script>
-export default {
+import bus from "../../bus.js"
+
+export default{
     methods:{
+        // close(){
+        //     this.$refs.veil.classList.remove("anm-fade-in")
+        //     this.$refs.widgetBody.classList.remove("anm-expand-up");
+
+        //     setTimeout(
+        //         ()=>{
+        //             this.$refs.widgetBody.classList.add("anm-expand-up-reverse")
+        //             this.$refs.veil.classList.add("anm-fade-in-reverse")
+        //         }
+        //     , 10)
+
+        //     setTimeout(
+        //         ()=>console.log(this.$emit("close"))
+        //     ,401);
+        // },
         close(){
-            this.$refs.veil.classList.remove("anm-fade-in")
-            this.$refs.widgetBody.classList.remove("anm-expand-up");
-
-            setTimeout(
-                ()=>{
-                    this.$refs.widgetBody.classList.add("anm-expand-up-reverse")
-                    this.$refs.veil.classList.add("anm-fade-in-reverse")
-                }
-            , 10)
-
-            setTimeout(
-                ()=>console.log(this.$emit("close"))
-            ,401);
+            console.log(33);
+            bus.closeWithDelay(this.$refs.widgetBody, this.$refs.veil, this)
         },
+        
+    },
+    created(){
+        bus.$on("appTasks_closeOpenWindow", ()=>{
+            if(this.$refs.veil){
+                this.close();
+            }
+        });
     }
 }
 </script>
@@ -55,6 +70,7 @@ export default {
     #widget-body{
         position: fixed;
         min-height: 80vh;
+        max-height: 90vh;
         width: 70vw;
         max-width: 50rem;
         background: var(--bg-primary);
@@ -62,7 +78,7 @@ export default {
         left: 50%;
         transform: translate(-50%, -50%);
         z-index: 30;
-        padding: 1rem 2rem;
+        padding: 1rem 2rem 2rem;
         border: var(--shadow-subs-border)
 
     }
@@ -84,10 +100,10 @@ export default {
     }
     #main-section{
         padding: .5rem .7rem;
+        max-height: 70vh;
         margin-top: 1rem;
-        max-height: 90%;
         max-width: 100%;
-        overflow-y:auto;
+        overflow-y: auto;
         overflow-x: hidden;
         word-wrap: normal;
         white-space: pre-line;
@@ -97,11 +113,8 @@ export default {
     .veil{
         z-index: 20;
     }
-    .spaced{
-        padding-bottom: .5rem;
-    }
-    .indented{
-        padding-left: 2rem;
+    .fa-times{
+        font-size: 1.2rem;
     }
     
 

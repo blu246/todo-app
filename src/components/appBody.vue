@@ -6,7 +6,7 @@
         </transition>
 
         <app-tasks></app-tasks>
-        <parser-input  v-if="showParserInput" @close="showParserInput=false"></parser-input>
+        <parser-input  v-if="showParserInput" @close="showParserInput=false" ></parser-input>
         
         <context-menu 
             v-if="contextMenu_showMenu" 
@@ -56,7 +56,7 @@ export default {
                     break;
                 case "blur":
                     setTimeout(()=>this.showSearchBar = false, 10);
-                    setTimeout(()=>this.showParserInput = false, 10);
+                    // setTimeout(()=>this.showParserInput = false, 10);
                     if(this.showSearchBar){bus.$emit("tasksearchinput", "")}
                     //everytime that damn bus causes us a problem I will make it loud and clear so next time you use Vuex
 

@@ -27,6 +27,8 @@
     --shadow-subs-border2: 1px solid transparent;
     --shadow-subs-border3: 1px solid #555;
     --parser-border: 1px solid #bbb;
+    --bg-parse-btn: #f8f8f8;
+    --selected-highlight-color: #ff8d23;
 
 
 }    
@@ -35,7 +37,7 @@
     --primary-color: #f36643;
     --bg-primary: #161616;
     --bg-secondary: #202020;
-    --bg-darker: rgb(10, 10, 10);
+    --bg-darker: #0a0a0a;
     --bg-thirdary: #0c0c0c; 
     --bg-fourthary: #101010;
     --bg-inv: rgb(211, 211, 211);
@@ -47,15 +49,18 @@
     --separator4: #b4b4b4;
     --accent-color: #f36643;
     --text-color: #dddddd;
-    --text-color-light: #b6b6b6;
-    --text-color-dark: #eeeeee;
-    --text-color-darker: #f7f7f7;
+    --text-color-light: #acacac;
+    --text-color-dark: #ececec;
+    --text-color-darker: #ececec;
     --text-color2: #dbdbdb;
     --veil-color: #000000c9;
     --shadow-val1: transparent; --shadow-val2: transparent;
     --shadow-subs-border: 1px solid #4e4e4e;
     --shadow-subs-border2: 1px solid #5e5e5e;
+    --shadow-subs-border3: 1px solid transparent;
     --parser-border: 1px solid #555;
+    --bg-parse-btn: #0a0a0a;
+    --selected-highlight-color: #ff8819;
 }
 *{
     margin: 0;
@@ -187,3 +192,19 @@ body{
     100%{opacity: 0}
 }
 
+
+
+#newparse-button{
+    position: relative;
+    display: inline-block;
+}
+#newparse-button .fa-list-ul{
+    position: absolute;
+    font-size: 70%;
+    z-index: 3;
+    right: -17%;
+    top: -12%;
+    }
+#newparse-button .fa-plus{
+    font-size: 110%;
+}

@@ -251,28 +251,31 @@ computed:{
 
         },
         globalLocalExpandCollapse(expand){
-            const i = this.flatListSelectedIndex;
-            if(this.flatListSelectedIndex > -1){
-                if(this.flatList[i].subtasks.length> 0 ){
-                    if(expand){
-                        this.expandCollapse([this.flatList[i]], true)
-                    } else{
-                        this.expandCollapse([this.flatList[i]], false)
-                    }
-                    this.flatList[i].isSelected = true;
-                }
-            }
-            else{
-                if(expand){
-                    this.expandCollapse(this.tasksList, true)
-                }else{
-                    this.expandCollapse(this.tasksList, false)
+            if(this.flatList.length){
 
+                const i = this.flatListSelectedIndex;
+                if(this.flatListSelectedIndex > -1){
+                    if(this.flatList[i].subtasks.length> 0 ){
+                        if(expand){
+                            this.expandCollapse([this.flatList[i]], true)
+                        } else{
+                            this.expandCollapse([this.flatList[i]], false)
+                        }
+                        this.flatList[i].isSelected = true;
+                    }
+                }
+                else{
+                    if(expand){
+                        this.expandCollapse(this.tasksList, true)
+                    }else{
+                        this.expandCollapse(this.tasksList, false)
+
+                    }
                 }
             }
         },
         shortcutsTaskFunctions(type){
-            const i = this.flatListSelectedIndex;
+            let i = this.flatListSelectedIndex;
             // switch(type){
             //     case "newtask":
             //         if(i> -1){
@@ -288,14 +291,21 @@ computed:{
             //     case "delete":
 
             // }
-
             if(i < 0 && type == "newtask"){
                     this.newTask();
             }else{
                 bus.$emit("shortcuts_taskfunctions", this.flatListSelectedIndex, type);
+                if(type == "delete"){
+                    if(this.flatList.length){
+                        this.flatListSelectedIndex = i > 0 ? i - 1 : 0;
+                        setTimeout( ()=>this.flatList[this.flatListSelectedIndex].isSelected = true, 10)
+                    } else{
+                        this.flatListSelectedIndex = -1;
+                    }
+                }
             }
         },
-        keyboardShortcutsParser(e){
+        keyboardShortcutsParser(e, bypass){
 
             // List of shortcuts
             // - enable keyb shortcuts             -> ctrl+alt+e
@@ -313,8 +323,10 @@ computed:{
 
             let cmnd;
             // Activate shortcuts shortcut
-            if(e.ctrlKey && e.altKey && e.code == "KeyE"){
+            if( (e.ctrlKey && e.altKey && e.code == "KeyE") || bypass){
                 this.isKeyboardShortcutsOn  = !this.isKeyboardShortcutsOn;
+                window.localStorage.setItem("isKeyboardShortcutsOn", this.isKeyboardShortcutsOn);
+                bus.$emit("appTasks_to_appHeader__keybShortcutsToggle", this.isKeyboardShortcutsOn)
             }
             if(this.isKeyboardShortcutsOn){
                 // cmnd with SHIFT modifier
@@ -334,7 +346,7 @@ computed:{
                             break;
                         case "KeyR":
                             cmnd = "delete";
-                            this.shortcutsTaskFunctions("delete")
+                            this.shortcutsTaskFunctions("delete");
                             break;
                         case "KeyX":
                             cmnd = "done";
@@ -348,12 +360,16 @@ computed:{
                             cmnd = "collapse";
                             this.globalLocalExpandCollapse(false)
                             break;
+                        case "KeyW":
+                            bus.$emit("dateandstatuscontrols", "newparse");
                         }
+
                 } else{
                 switch(e.code){
                     case "Escape":
                         cmnd = "cancel";
                         this.deselectTasks();
+                        bus.$emit("appTasks_closeOpenWindow")
                         break;
                     case "ArrowUp":
                         cmnd = "nextTask"
@@ -368,7 +384,7 @@ computed:{
             }
         }
             if(cmnd){
-            console.log(cmnd)
+            // console.log(cmnd)
             //   bus.$emit("shortcuts_"+cmnd);
             }
         },
@@ -441,6 +457,14 @@ computed:{
 
         window.addEventListener("keydown", this.keyboardShortcutsParser);
         
+        const keyb = JSON.parse(window.localStorage.getItem("isKeyboardShortcutsOn"));
+        if(keyb == null){
+            window.localStorage.setItem("isKeyboardShortcutsOn", this.isKeyboardShortcutsOn);
+        }else{
+            this.isKeyboardShortcutsOn = keyb;
+        }
+        
+        bus.$on("appHeader_to_appTasks__keybIconClicked", ()=>this.keyboardShortcutsParser({}, true));
 
 
 

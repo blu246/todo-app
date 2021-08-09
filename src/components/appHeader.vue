@@ -1,5 +1,6 @@
 <template>
  <header class="shadow bg-primary">
+        <help-widget class="help-widget" :signal="helpWidgetSignal"></help-widget>
 
      <div class="container flex spc-btw my-auto">
         <div class="placeholder"></div>
@@ -9,20 +10,38 @@
         <div  id="perc-clock-container">
             <div id="perc-container" v-if="!(percVal==-1)">
                 <span id=perc-val>{{percString}}</span>
-                <span class="separator"></span>
             </div>
+            
+            <span class="separator"></span>
             <h2 id="clock">{{time}}</h2>
 
             <span class="separator"></span>
-            <div class="theme-container" @click="themeMethod">
-                <transition mode="out-in" name="v">
-                    <i class="fas fa-sun btn-hover"  v-if="inLightMode" key="sun"></i>
-                    <i class="fas fa-moon btn-hover" v-else key="moon"></i>
+
+            <div class="ham-container">
+
+                <i class="fa fa-gear btn-hover" @click.stop="showHamContent =! showHamContent"></i>
+
+                <transition name="ham">
+                    <div class="ham-inner-cont" v-if="showHamContent">
+                        <div class="theme-container" @click="themeMethod">
+
+                            <transition mode="out-in" name="theme-btn">
+                                <i class="fas fa-sun btn-hover"  v-if="inLightMode" key="sun"></i>
+                                <i class="fas fa-moon btn-hover" v-else key="moon"></i>
+                            </transition>
+                        </div>
+
+
+                        <i class="far fa-question-circle help-icon btn-hover" @click="helpWidgetSignal++"></i>
+
+                        <template v-if="showkeybIcon">
+                            <i class="far fa-keyboard keyb-icon btn-hover" @click="keybIconFunc" :class="{keyboardIconOn: keybIconState}"></i>
+                        </template>
+                    </div>
                 </transition>
             </div>
-        </div>
-        
 
+        </div>
      </div>
 
       <!-- <div v-if="!(percVal==-1)" class="perc-clock-container mobile">{{percString}}</div> -->
@@ -33,17 +52,27 @@
 
 <script>
 import bus from "../bus.js"
+import helpWidget from "./helpWidget.vue"
 export default {
+    components:{
+        helpWidget
+    },
     data(){return{
             date: "",
             time: "",
             percVal: 0,
             inLightMode: true,
+            helpWidgetSignal: 0,
+            keybIconState: null,
+            showHamContent: false,
         }
     },
     computed:{
         percString(){
             return (this.percVal * 100).toFixed(0) + "% done";
+        },
+        showkeybIcon(){
+            return !bus.onMobile
         }
     },
     methods:{
@@ -60,7 +89,10 @@ export default {
             document.documentElement.className = this.inLightMode ? "light" : "dark";
             window.localStorage.setItem("theme_inLightMode", this.inLightMode);
 
-        }
+        },
+        keybIconFunc(){
+            bus.$emit("appHeader_to_appTasks__keybIconClicked")
+        },
     },
     mounted(){
         this.updateDateTime(); //set date initially to avoid the 1s delay;
@@ -81,6 +113,9 @@ export default {
         }
         this.inLightMode = mode;
         document.documentElement.className = mode ? "light" : "dark";
+
+        bus.$on("appTasks_to_appHeader__keybShortcutsToggle", (state)=>this.keybIconState = state);
+        this.keybIconState = JSON.parse(window.localStorage.getItem("isKeyboardShortcutsOn"));
     }
 }
 
@@ -126,30 +161,66 @@ export default {
     .placeholder{
         display: none;
     }
-
-    .theme-container{
+    .help-widget{
         display: inline-block;
-        margin: 0 .5rem;
     }
-    .theme-container .fas{
+    .theme-container, .help-icon, .keyb-icon, .ham-container{
+        display: inline-block;
+        margin: 0 .3rem;
+    }
+    .theme-container .fas, .help-icon, .keyb-icon, .fa-gear{
         font-size: 1.6rem;
     }
 
-
-    .v-leave, .v-enter-active{
+    .theme-btn-leave, .theme-btn-enter-active{
         transition: all .2s ease;
         transform: rotate(0deg);
         filter: blur(.5px);
     }
-    .v-enter, .v-leave-active{
+    .theme-btn-enter, .theme-btn-leave-active{
         transition: all .2s ease;
         transform: rotate(-180deg);
         filter: blur(1px);
     }
-    .v-leave-active{
+    .theme-btn-leave-active{
         transform: rotate(180deg);
     }
-
+    .keyboardIconOn{
+        color: var(--primary-color);
+    }
+    .ham-container{
+        position: relative;
+    }
+    .ham-inner-cont{
+        position: absolute;
+        z-index: 5;
+        top: 100%;
+        left: -100%;
+        background: var(--bg-thirdary);
+        box-shadow: 2px 2px 2px var(--shadow-val1), -1px -1px 2px var(--shadow-val2);
+        border: var(--shadow-subs-border);
+        border-radius: 7px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        padding: .2rem 0;
+        transform-origin: 0 0;
+    }
+    .ham-inner-cont > *{
+        padding: .6rem .4rem;
+    }
+    .shrink-up{
+        }
+    .ham-enter-active, .ham-leave{
+        animation: expand-down .3s ease-in-out forwards;
+    }
+    .ham-leave-active, .ham-active{
+        animation: expand-down .3s ease-in-out reverse;
+    }
+    @keyframes expand-down{
+        from{transform: scaleY(0%); z-index: 5; opacity: 0;}
+        to{transform: scaleY(100%); z-index: 5; opacity: 1}
+    }
     
 
     @media only screen and (max-width: 600px) {

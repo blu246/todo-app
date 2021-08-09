@@ -212,6 +212,11 @@ export default {
     },
     created(){
         this.closeOnSelection = JSON.parse(window.localStorage.getItem("closeOnSelectionPreference"));
+        bus.$on("appTasks_closeOpenWindow", ()=>{
+            if(this.$refs.veil){
+                this.closePicker();
+            }
+        });
     }
     
 }
