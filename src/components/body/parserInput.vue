@@ -1,24 +1,30 @@
 <template>
     <div>
-        <div id="parser-body" class="shadow br-rnd anm-expand-up" @click.stop ref="parserBody">
-            <div id="title-section">
-                <h2>Add entries through typing <i class="far fa-question-circle btn-hover" 
-                    @click.stop="showInfo=!showInfo">
-                </i></h2>
-                
-                <div id="controls">
-                    <!-- <i class="fas fa-check btn-hover" @click="parseInput"></i> -->
-                    <i class="fas fa-times btn-hover" @click="closeParser()"></i>
-                </div>
-            </div>
-            <textarea ref="textArea" class="br-rnd" id="parser-input" v-model="parserInput"></textarea>
+        <div class="widget-body-container" @click.stop="closeParser">
+            <transition name="widget-expand-up" @after-leave="afterLeaveFunc">
+                <div v-if="anm_showElements" id="parser-body" class="shadow br-rnd"  ref="parserBody">
+                    <div id="title-section">
+                        <h2>Add entries through typing <i class="far fa-question-circle btn-hover" 
+                            @click.stop="showInfo=!showInfo">
+                        </i></h2>
+                        
+                        <div id="controls">
+                            <!-- <i class="fas fa-check btn-hover" @click="parseInput"></i> -->
+                            <i class="fas fa-times btn-hover" @click="closeParser"></i>
+                        </div>
+                    </div>
+                    <textarea ref="textArea" class="br-rnd" id="parser-input" v-model="parserInput"></textarea>
 
-            <div class='parse-btn-container'>
-                <span class="parse-btn btn-hover" @click.stop="parseInput">Parse input</span>
-            </div>
+                    <div class='parse-btn-container'>
+                        <span class="parse-btn btn-hover" @click.stop="parseInput">Parse input</span>
+                    </div>
+                </div>
+            </transition>
         </div>
 
-        <div class="veil anm-fade-in" @click.stop="closeParser" ref="veil"></div>
+        <transition name="veil-fade">
+            <div v-if="anm_showElements" class="veil anm-fade-in" @click.stop="closeParser" ref="veil"></div>
+        </transition>
         
         <infowidget v-if="showInfo" @close="showInfo=false">
             <template v-slot:title>Creating tasks the easy way</template>
@@ -52,6 +58,7 @@ export default {
     data(){return{
         parserInput: "",
         showInfo: false,
+        anm_showElements: false,
     }},
     watch:{
         // parserInput(){
@@ -120,13 +127,18 @@ export default {
             // setTimeout(
             //     ()=>console.log(this.$emit("close"))
             // ,401);
-            bus.closeWithDelay(this.$refs.parserBody, this.$refs.veil, this);
+            // bus.closeWithDelay(this.$refs.parserBody, this.$refs.veil, this);
+            this.anm_showElements = false;
         },
+        afterLeaveFunc(){
+            this.$emit("close");
+        }
         
 
     },
     mounted(){
-        setTimeout(()=>this.$refs.textArea.focus(), 50)
+        setTimeout(()=>this.$refs.textArea.focus(), 50);
+        this.anm_showElements = true;
     }, 
     created(){
         window.addEventListener("keydown", this.keyboardShortcutsFunc)
@@ -151,14 +163,13 @@ export default {
         min-height: 50vh; width: 60vw;
         max-width: 40rem;
         background: var(--bg-primary);
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        /* position: fixed; */
+        /* top: 50%; */
+        /* left: 50%; */
+        /* transform: translate(-50%, -50%); */
         padding: 1rem 1.3rem;
         z-index: 20;
         border: var(--shadow-subs-border);
-        /* overflow: auto; */
     }
     
     #title-section{

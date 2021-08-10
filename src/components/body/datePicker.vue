@@ -1,96 +1,107 @@
 <template>
   <div class="root ">
-        <div class="veil anm-fade-in" ref="veil" @click.stop="closePicker"></div>
-        <div id="date-picker-body" class="br-rnd shadow anm-expand-up" @click.stop ref="pickerBody">
-            <div class="close-btn-container">
-                <i class="fas fa-times btn-hover" @click="closePicker"></i>
-            </div>
-            <div 
-                name="month" 
-                id="month-year-picker-container" 
-            >
-                <i class="fas fa-caret-left" @click.stop="monthYearArrowFunc('dec')"> </i>
-                <div id="year-month-text" @click.stop="showMonthGrid=!showMonthGrid">
-                    <span 
-                        v-if="!showMonthGrid"
-                    >
-                        {{months[selectedDate.month]}}
-                    </span>
-                    {{selectedDate.year}}
-                </div>
-                <i class="fas fa-caret-right" @click.stop="monthYearArrowFunc('inc')"> </i>
+        <transition name="veil-fade">
+            <div v-if="anm_showElements" class="veil anm-fade-in" ref="veil" @click.stop="closePicker"></div>
+        </transition>
 
-            </div>
-
-            <div class="days-picker-container">
-                    <div id="days-grid" v-if="!showMonthGrid">
-                        <!-- the labels. Mon, Tue,... -->
-                        <div class="day-label" v-for="day in days" :key="day">{{day}}</div>
-                        
-                        
-                        <!-- pre-fillers to align date with weekday -->
-                        <div 
-                            class="day-number fillers"
-                            v-for="i in monthFirstDay"
-                            :key="i+Math.random()*100"
-                            @click.stop
-
-                        >
-                        </div>
-
-                        <!-- actual numbers -->
-                        <div 
-                            class="day-number"
-                            v-for="day in numberOfDays"
-                            :key="day"
-                            :class="{
-                                        'is-empty': isDayEmpty(day),
-                                        'is-today': day == todaysDate.day
-                                                    && todaysDate.month == selectedDate.month
-                                                    && todaysDate.year == selectedDate.year,
-
-                                        'is-selected': day == passedDate.day 
-                                                    && selectedDate.month == passedDate.month
-                                                    && selectedDate.year == passedDate.year,
-                                    }"
-                            @click.stop="dayPicked(day)"
-                        >
-                                
-                                {{day}}
-                        </div>
-
-                        <!-- post fillers -->
-                        <div 
-                            class="day-number fillers"
-                            v-for="i in numOfPostFillers"
-                            :key="i+Math.random()*100"
-                            @click.stop
-                        >
-                            
-                        </div>
-
+        <div class="widget-body-container" @click.stop="closePicker">
+            <transition name="widget-expand-up" @after-leave="$emit('close')">
+                <div v-if="anm_showElements" id="date-picker-body" class="br-rnd shadow" @click.stop ref="pickerBody">
+                    
+                    <div class="close-btn-container">
+                        <i class="fas fa-times btn-hover" @click="closePicker"></i>
                     </div>
-
-                <div id="months-grid" v-else>
                     <div 
-                        v-for="(month, index) in months"
-                        :key="month"
-                        @click.stop="selectedDate.month=index; showMonthGrid=false"
-                        class="month"
-                        :class="{'is-selected': index == selectedDate.month}"
+                        name="month" 
+                        id="month-year-picker-container" 
                     >
-                        {{month}}
-                    </div>
-                </div>
-            </div>
+                        <i class="fas fa-caret-left" @click.stop="monthYearArrowFunc('dec')"> </i>
+                        <div id="year-month-text" @click.stop="showMonthGrid=!showMonthGrid">
+                            <span 
+                                v-if="!showMonthGrid"
+                            >
+                                {{months[selectedDate.month]}}
+                            </span>
+                            {{selectedDate.year}}
+                        </div>
+                        <i class="fas fa-caret-right" @click.stop="monthYearArrowFunc('inc')"> </i>
 
-            <div class="preference-container">
-                <div class="faux-checkbox checkbox-checked" @click="closeOnSelectionMethod">
-                        <i class="fas fa-check" v-if="closeOnSelection"></i>
-                </div>
-                <p>Close on selection</p>
+                    </div>
+
+                    <div class="days-picker-container">
+                            <div id="days-grid" v-if="!showMonthGrid">
+                                <!-- the labels. Mon, Tue,... -->
+                                <div class="day-label" v-for="day in days" :key="day">{{day}}</div>
+                                
+                                
+                                <!-- pre-fillers to align date with weekday -->
+                                <div 
+                                    class="day-number fillers"
+                                    v-for="i in monthFirstDay"
+                                    :key="i+Math.random()*100"
+                                    @click.stop
+
+                                >
+                                </div>
+
+                                <!-- actual numbers -->
+                                <div 
+                                    class="day-number"
+                                    v-for="day in numberOfDays"
+                                    :key="day"
+                                    :class="{
+                                                'is-empty': isDayEmpty(day),
+                                                'is-today': day == todaysDate.day
+                                                            && todaysDate.month == selectedDate.month
+                                                            && todaysDate.year == selectedDate.year,
+
+                                                'is-selected': day == passedDate.day 
+                                                            && selectedDate.month == passedDate.month
+                                                            && selectedDate.year == passedDate.year,
+                                            }"
+                                    @click.stop="dayPicked(day)"
+                                >
+                                        
+                                        {{day}}
+                                </div>
+
+                                <!-- post fillers -->
+                                <div 
+                                    class="day-number fillers"
+                                    v-for="i in numOfPostFillers"
+                                    :key="i+Math.random()*100"
+                                    @click.stop
+                                >
+                                    
+                                </div>
+
+                            </div>
+
+                        <div id="months-grid" v-else>
+                            <div 
+                                v-for="(month, index) in months"
+                                :key="month"
+                                @click.stop="selectedDate.month=index; showMonthGrid=false"
+                                class="month"
+                                :class="{'is-selected': index == selectedDate.month}"
+                            >
+                                {{month}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preference-container">
+                        <div class="faux-checkbox checkbox-checked" @click="closeOnSelectionMethod">
+                                <i class="fas fa-check" v-if="closeOnSelection"></i>
+                        </div>
+                        <p>Close on selection</p>
+                    </div>
+            
+            
             </div>
+        </transition>
     </div>
+
   </div>
 </template>
 
@@ -104,7 +115,9 @@ export default {
         days:["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         showMonthGrid: false,
         selectedDate: {...this.passedDate},
-        closeOnSelection: false
+        closeOnSelection: false,
+        anm_showElements: false,
+
     }},
 
     computed:{
@@ -194,7 +207,8 @@ export default {
         },
 
         closePicker(){
-                bus.closeWithDelay(this.$refs.pickerBody, this.$refs.veil, this)
+            // bus.closeWithDelay(this.$refs.pickerBody, this.$refs.veil, this)
+            this.anm_showElements = false;
         },
         closeOnSelectionMethod(){
             this.closeOnSelection = !this.closeOnSelection;
@@ -217,6 +231,9 @@ export default {
                 this.closePicker();
             }
         });
+    },
+    mounted(){
+        this.anm_showElements = true;
     }
     
 }
@@ -224,12 +241,12 @@ export default {
 
 <style scoped>
     #date-picker-body{
-        position: fixed;
+        /* position: fixed; */
         background: var(--bg-primary);
-        z-index: 5;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        /* z-index: 20; */
+        /* top: 50%; */
+        /* left: 50%; */
+        /* transform: translate(-50%, -50%); */
         font-size: 1rem;
         padding: 1.2rem;
         cursor: initial;
@@ -241,7 +258,7 @@ export default {
         display: flex;
         justify-content: space-evenly;
         align-items: center;
-        height: 100%;
+        /* height: 100%; */
         margin: 0 3rem;
         white-space: nowrap;
     }

@@ -154,7 +154,7 @@ body{
     color: var(--primary-color);
 }
 
-.anm-expand-up{
+/* .anm-expand-up{
     animation: expand-up .4s ease-in-out forwards;
 }
 .anm-expand-up-reverse{
@@ -186,11 +186,11 @@ body{
     }
     
 }
-/* just reversing the prev animation doesn't wanna work??? */
+ just reversing the prev animation doesn't wanna work??? 
 @keyframes fade-in-reverse{
     0%{opacity: 1}
     100%{opacity: 0}
-}
+} */
 
 
 
@@ -207,4 +207,39 @@ body{
     }
 #newparse-button .fa-plus{
     font-size: 110%;
+}
+
+/* veil and widget animations */
+.veil-fade-enter-active, .veil-fade-leave{
+    opacity: 1;
+    transition: all .4s ease-in-out;
+
+}
+.veil-fade-leave-active, .veil-fade-enter{
+    opacity: 0;
+    transition: all .4s ease-in-out;
+}
+
+.widget-expand-up-enter-active, .widget-expand-up-leave{
+    transform: translateY(0%) scale(100%);
+    transition: all .4s ease-in-out;
+    opacity: 1;
+}
+.widget-expand-up-leave-active, .widget-expand-up-enter{
+    transform: translateY(100%) scale(0%);
+    transition: all .4s ease-in-out;
+    opacity: 0;
+}
+
+.widget-body-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    place-content: center;
+    /* overflow: hidden; */
+    /* setting overflow causes jittery entring animations (scaleY overshoorts, overcorrects, then settles) */
+    z-index: 30;
 }

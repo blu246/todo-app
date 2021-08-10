@@ -7,41 +7,43 @@
 
         <h1> <i class="fas fa-microchip"></i>BrainCache</h1>
 
-        <div  id="perc-clock-container">
-            <div id="perc-container" v-if="!(percVal==-1)">
+        <!-- <div  id="perc-clock-container"> -->
+        <transition-group tag="div" id="perc-clock-container" name="ham">
+
+            <div id="perc-container" v-if="!(percVal==-1)" key="percContainer">
                 <span id=perc-val>{{percString}}</span>
+                <span class="separator"></span>
             </div>
             
-            <span class="separator"></span>
-            <h2 id="clock">{{time}}</h2>
+            <h2 id="clock" key="clockH2">{{time}}</h2>
 
-            <span class="separator"></span>
+            <span class="separator" key="sep1"></span>
 
-            <div class="ham-container">
+            <div class="xtra-container" v-if="showHamContent" key="xtraCont">
+                <template v-if="showkeybIcon">
+                    <i class="far fa-keyboard keyb-icon btn-hover" @click="keybIconFunc" :class="{keyboardIconOn: keybIconState}"></i>
+                </template>
 
-                <i class="fa fa-gear btn-hover" @click.stop="showHamContent =! showHamContent"></i>
+                <span class="separator"></span>
 
-                <transition name="ham">
-                    <div class="ham-inner-cont" v-if="showHamContent">
-                        <div class="theme-container" @click="themeMethod">
+                <div class="theme-container" @click="themeMethod">
+                    <transition mode="out-in" name="theme-btn">
+                        <i class="fas fa-sun btn-hover"  v-if="inLightMode" key="sun"></i>
+                        <i class="fas fa-moon btn-hover" v-else key="moon"></i>
+                    </transition>
+                </div>
+                <span class="separator"></span>
 
-                            <transition mode="out-in" name="theme-btn">
-                                <i class="fas fa-sun btn-hover"  v-if="inLightMode" key="sun"></i>
-                                <i class="fas fa-moon btn-hover" v-else key="moon"></i>
-                            </transition>
-                        </div>
+                <i class="far fa-question-circle help-icon btn-hover" @click="helpWidgetSignal++"></i>
 
-
-                        <i class="far fa-question-circle help-icon btn-hover" @click="helpWidgetSignal++"></i>
-
-                        <template v-if="showkeybIcon">
-                            <i class="far fa-keyboard keyb-icon btn-hover" @click="keybIconFunc" :class="{keyboardIconOn: keybIconState}"></i>
-                        </template>
-                    </div>
-                </transition>
+                <span class="separator"></span>
             </div>
+            
 
-        </div>
+            <i class="fa fa-gear btn-hover ham-icon" key="gearIcon" @click.stop="showHamContent =! showHamContent"></i>
+
+        </transition-group>
+        <div class="cover-fix"></div>
      </div>
 
       <!-- <div v-if="!(percVal==-1)" class="perc-clock-container mobile">{{percString}}</div> -->
@@ -126,12 +128,14 @@ export default {
         padding: 0 .5rem;
         border: var(--shadow-subs-border);
         border-left: 0; border-right: 0; border-top: 0;
+        overflow: hidden;
     }
   
     .container{
         align-items: flex-end;
         padding-top: .4rem;
         padding-bottom: 0.1rem;
+        position: relative;
     }
     h1{
         font-weight: 700;
@@ -148,6 +152,11 @@ export default {
         font-size: 1.4rem;
         font-weight: 200;
     }
+    #perc-clock-container{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
     
     .separator{
         display: inline-block;
@@ -161,13 +170,7 @@ export default {
     .placeholder{
         display: none;
     }
-    .help-widget{
-        display: inline-block;
-    }
-    .theme-container, .help-icon, .keyb-icon, .ham-container{
-        display: inline-block;
-        margin: 0 .3rem;
-    }
+    
     .theme-container .fas, .help-icon, .keyb-icon, .fa-gear{
         font-size: 1.6rem;
     }
@@ -188,40 +191,50 @@ export default {
     .keyboardIconOn{
         color: var(--primary-color);
     }
-    .ham-container{
-        position: relative;
-    }
-    .ham-inner-cont{
-        position: absolute;
-        z-index: 5;
-        top: 100%;
-        left: -100%;
-        background: var(--bg-thirdary);
-        box-shadow: 2px 2px 2px var(--shadow-val1), -1px -1px 2px var(--shadow-val2);
-        border: var(--shadow-subs-border);
-        border-radius: 7px;
+    
+    .xtra-container{
         display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        padding: .2rem 0;
-        transform-origin: 0 0;
+        align-items: center;
+        border-radius: 10px;
     }
-    .ham-inner-cont > *{
-        padding: .6rem .4rem;
-    }
-    .shrink-up{
-        }
-    .ham-enter-active, .ham-leave{
-        animation: expand-down .3s ease-in-out forwards;
-    }
-    .ham-leave-active, .ham-active{
-        animation: expand-down .3s ease-in-out reverse;
-    }
-    @keyframes expand-down{
-        from{transform: scaleY(0%); z-index: 5; opacity: 0;}
-        to{transform: scaleY(100%); z-index: 5; opacity: 1}
+    .xtra-container > *:not(span){
+        padding: 0rem .5rem;
     }
     
+    .ham-enter-active, .ham-leave{
+        transition: transform .4s ;
+        transform: translateX(0%);
+        z-index: 2;
+        position: relative;
+    }
+    .ham-leave-active, .ham-enter{
+        transition: transform .4s ;
+        transform: translateX(100%);
+        z-index: 2;
+        position: relative;
+    }
+    .ham-leave-active{
+        position: absolute;
+    }
+    .ham-move{
+        transition: transform .4s;
+    }
+    .ham-icon{
+        z-index: 5;
+        background: rgba(255, 0, 0, 0.315);
+        position: relative;
+        background: var(--bg-primary);
+    }
+    .cover-fix{
+        position: absolute;
+        top: -30%;
+        right: -40%;
+        border: 1px solid green;
+        height: 150%;
+        width: 40%;
+        z-index: 4;
+        background: var(--bg-primary);
+    }
 
     @media only screen and (max-width: 600px) {
         
@@ -249,6 +262,12 @@ export default {
         .perc-clock-container, #placeholder{
              flex-basis: 24%;
              flex-shrink: 1;
+         }
+         .xtra-container{
+            margin-right: .4rem;
+         }
+         .ham-icon{
+            padding: .2rem 0
          }
     }
 
