@@ -5,12 +5,12 @@
      <div class="container flex spc-btw my-auto">
         <div class="placeholder"></div>
 
-        <h1> <i class="fas fa-microchip"></i>BrainCache</h1>
+        <h1> <i class="fas fa-microchip"></i>B-Cache</h1>
 
         <!-- <div  id="perc-clock-container"> -->
         <transition-group tag="div" id="perc-clock-container" name="ham">
 
-            <div id="perc-container" v-if="!(percVal==-1)" key="percContainer">
+            <div class="perc-container" v-if="!(percVal==-1)" key="percContainer">
                 <span id=perc-val>{{percString}}</span>
                 <span class="separator"></span>
             </div>
@@ -71,7 +71,12 @@ export default {
     },
     computed:{
         percString(){
-            return (this.percVal * 100).toFixed(0) + "% done";
+            window.innerWidth;
+            let done = "% done";
+            if(window.innerWidth < 320){
+                done = !this.showHamContent ? "% done" : "%";
+            }
+            return (this.percVal * 100).toFixed(0) + done;
         },
         showkeybIcon(){
             return !bus.onMobile
@@ -146,8 +151,11 @@ export default {
         font-weight: 400;
         font-size: 1.8rem;
         display: inline-block;
+        z-index: 5;
+        background: var(--bg-primary);
+        padding: .2rem 0;
     }
-    #perc-container{
+    .perc-container{
         display: inline-block;
         font-size: 1.4rem;
         font-weight: 200;
@@ -164,7 +172,6 @@ export default {
         width: 1px;
         height: 1.2rem;
         margin: 0 .3rem;
-
 
     }
     .placeholder{
@@ -202,13 +209,13 @@ export default {
     }
     
     .ham-enter-active, .ham-leave{
-        transition: transform .4s ;
+        transition: all .4s ;
         transform: translateX(0%);
         z-index: 2;
-        position: relative;
+        position: relat ive;
     }
     .ham-leave-active, .ham-enter{
-        transition: transform .4s ;
+        transition: all .4s ;
         transform: translateX(100%);
         z-index: 2;
         position: relative;
@@ -221,15 +228,14 @@ export default {
     }
     .ham-icon{
         z-index: 5;
-        background: rgba(255, 0, 0, 0.315);
         position: relative;
+        padding: .2rem 0;
         background: var(--bg-primary);
     }
     .cover-fix{
         position: absolute;
         top: -30%;
         right: -40%;
-        border: 1px solid green;
         height: 150%;
         width: 40%;
         z-index: 4;
@@ -255,8 +261,9 @@ export default {
             display: none;
         }
         #perc-val{
-            font-size: 1.2rem;
-            font-weight: 400;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-right: .3rem;
         }
 
         .perc-clock-container, #placeholder{
@@ -267,8 +274,14 @@ export default {
             margin-right: .4rem;
          }
          .ham-icon{
-            padding: .2rem 0
+            padding: .2rem 0;
+
          }
+        .xtra-container > *:not(span){
+        }
+        .theme-container .fas, .help-icon, .keyb-icon, .fa-gear{
+        font-size: 1.4rem;
+    }
     }
 
 

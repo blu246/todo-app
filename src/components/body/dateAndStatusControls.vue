@@ -23,19 +23,22 @@ export default {
         showCompactedIcons: window.innerWidth > 350,
     }},
     computed:{
+        showEllipsis(){
+            return window.innerWidth < 350;
+        }
        
     },
     methods:{
         emit(type){
             bus.$emit("dateandstatuscontrols", type);
-            if(bus.onMobile){
+            if(window.innerWidth < 350){
                 this.showCompactedIcons = false;
             }
         },
         
     },
     mounted(){
-        if(bus.onMobile){
+        if(window.innerWidth < 350){
             bus.$on("bodyclicked", ()=>this.showCompactedIcons = false);
         }
         

@@ -119,10 +119,11 @@ export default{
     
 
 @media only screen and (max-width: 600px){
-    #widget-body{
+    .widget-body{
         width: 95vw;
         max-width: 40rem;
         padding: .7rem;
+        
     }
     #title-section h3{
         font-size: 1rem;
